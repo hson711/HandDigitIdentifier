@@ -1,5 +1,6 @@
 import sys
-
+from PyQt5.QtWidgets import QInputDialog, QLineEdit, QFileDialog
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QMainWindow
@@ -17,18 +18,22 @@ class Window(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle('Handwritten Digit/English Recognizer')
         self._createMenu()
-
-    def openSideWindow(x,y):
-        print("1")
-
+    def openSideWindow(self, checked):
+        self.w = sideWindow()
+        self.w.show()
     def _createMenu(self):
         self.menu = self.menuBar().addMenu("&File")
         datasetAction = self.menu.addAction('&Train Model')
         datasetAction.triggered.connect(self.openSideWindow)
         self.menu.addAction('&Quit', self.close)
         self.menu = self.menuBar().addMenu("&View")
-        
-        
+
+class sideWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Choose a model:')
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = Window()
