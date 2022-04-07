@@ -19,9 +19,11 @@ class Window(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle('Handwritten Digit/English Recognizer')
         self._createMenu()
+        
     def openSideWindow(self, checked):
         self.w = sideWindow()
         self.w.show()
+
     def _createMenu(self):
         self.menu = self.menuBar().addMenu("&File")
         datasetAction = self.menu.addAction('&Import Dataset')
@@ -30,6 +32,8 @@ class Window(QMainWindow):
         datasetAction.triggered.connect(self.openSideWindow)
         self.menu.addAction('&Quit', self.close)
         self.menu = self.menuBar().addMenu("&View")
+        self.menu = self.menu.addAction('&View Dataset')
+
     def importDataset(self):
         name, done1 = QtWidgets.QInputDialog.getText(
              self, 'Input Dialog', 'Enter dataset to import:')
