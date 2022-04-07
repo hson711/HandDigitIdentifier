@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Window(QMainWindow):
     """Main Window."""
@@ -23,10 +24,17 @@ class Window(QMainWindow):
         self.w.show()
     def _createMenu(self):
         self.menu = self.menuBar().addMenu("&File")
+        datasetAction = self.menu.addAction('&Import Dataset')
+        datasetAction.triggered.connect(self.importDataset)
         datasetAction = self.menu.addAction('&Train Model')
         datasetAction.triggered.connect(self.openSideWindow)
         self.menu.addAction('&Quit', self.close)
         self.menu = self.menuBar().addMenu("&View")
+    def importDataset(self):
+        name, done1 = QtWidgets.QInputDialog.getText(
+             self, 'Input Dialog', 'Enter dataset to import:')
+        if done1:
+            print(name)
 
 class sideWindow(QWidget):
     def __init__(self):
