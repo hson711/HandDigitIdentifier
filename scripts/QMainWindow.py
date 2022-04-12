@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5 import QtCore, QtGui, QtWidgets
+from QSideWindow import sideWindow
+from customPainter import customPainter, SecondExample
 
 class Window(QMainWindow):
     """Main Window."""
@@ -18,6 +20,7 @@ class Window(QMainWindow):
         """Initializer."""
         super().__init__(parent)
         self.setWindowTitle('Handwritten Digit/English Recognizer')
+        self.setGeometry(300, 300, 400, 300)
         self._createMenu()
         
     def openSideWindow(self, checked):
@@ -32,19 +35,19 @@ class Window(QMainWindow):
         datasetAction.triggered.connect(self.openSideWindow)
         self.menu.addAction('&Quit', self.close)
         self.menu = self.menuBar().addMenu("&View")
+        datasetAction = self.menu.addAction('&Custom Prediction')
+        datasetAction.triggered.connect(self.openCustomPainter)
         self.menu = self.menu.addAction('&View Dataset')
+    
+    def openCustomPainter(self, checked):
+        self.w = SecondExample()
+        self.w.show()
 
     def importDataset(self):
         name, done1 = QtWidgets.QInputDialog.getText(
              self, 'Input Dialog', 'Enter dataset to import:')
         if done1:
             print(name)
-
-class sideWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle('Choose a model:')
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
