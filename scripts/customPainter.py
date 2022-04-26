@@ -55,6 +55,7 @@ class customPainter(QWidget):
 class SecondExample(QDialog):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle('Digit Painter')
 
         layout = QHBoxLayout(self)
         self.setGeometry(300, 300, 400, 300)
