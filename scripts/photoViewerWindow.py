@@ -15,34 +15,40 @@ class photoViewerWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.scroll = QScrollArea()             # Scroll Area which contains the widgets, set as the centralWidget
-        self.widget = QWidget()                 # Widget that contains the collection of Vertical Box
-        self.vbox = QVBoxLayout()               # The Vertical Box that contains the Horizontal Boxes of  labels and buttons
+        self.scroll = QScrollArea()
+        self.widget = QWidget() 
+        self.layout = QGridLayout()
+        self.i = 0
+        self.j = 0
 
-        self.widget.setLayout(self.vbox)
+        self.widget.setLayout(self.layout)
 
         #Scroll Area Properties
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setWidgetResizable(True)
         self.scroll.setWidget(self.widget)
 
         self.setCentralWidget(self.scroll)
 
-        self.setGeometry(600, 100, 1000, 900)
+        self.setGeometry(600, 100, 1200, 1200)
         self.setWindowTitle('Scroll Area Demonstration')
         self.show()
 
     def showPhoto(self, photoFileDir):
         pm = QPixmap(photoFileDir)
         if not pm.isNull():
-            larger_pm = pm.scaled(1024,1024)
+            larger_pm = pm.scaled(400,400)
             imageLabel = QLabel(self)
             imageLabel.setPixmap(larger_pm)
-            self.vbox.addWidget(imageLabel)
+            if self.j == 3:
+                self.j = 0
+                self.i = self.i + 1
+            self.layout.addWidget(imageLabel,self.i,self.j)
+            self.j = self.j + 1
     
     #taken from https://stackoverflow.com/questions/65463848/pyqt5-fromiccprofile-failed-minimal-tag-size-sanity-error
-    def convert_to_srgb(file_path):
+    def convert_to_srgb(self,file_path):
         '''Convert PIL image to sRGB color space (if possible)'''
         img = Image.open(file_path)
         icc = img.info.get('icc_profile', '')
