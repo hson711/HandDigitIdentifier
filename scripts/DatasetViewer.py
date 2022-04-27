@@ -19,4 +19,5 @@ class datasetViewer():
         self.w = photoViewerWindow()
         for file in os.listdir(self.folderDir):
             fileDir = os.path.join(self.folderDir, file)
+            #self.w.convert_to_srgb(fileDir) #this isn't working for some reason
             self.w.showPhoto(fileDir)  
