@@ -10,11 +10,8 @@ from PyQt5.QtWidgets import (
     QMainWindow, QApplication,
     QLabel, QToolBar, QAction, QStatusBar
 )
-from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp
-from PyQt5.QtGui import QIcon
-import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -49,14 +46,14 @@ class customPainter(QtWidgets.QLabel):
         self.points << e.pos()
         self.update()
 
-    def submitCustomPicture(self):
+    def submitPicture(self):
         screen = QApplication.primaryScreen()
         screenshot = screen.grabWindow(self.winId() )
         screenshot.save('screenshot.png', 'png')
-        print("help")
 
 
 class SecondExample(QDialog):
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Digit Painter')
@@ -66,8 +63,12 @@ class SecondExample(QDialog):
         self.widget = customPainter()
 
         toolbar = QMenuBar()
-        paintClearAction = QAction("Clear Paint", toolbar)
+        paintClearAction = QAction("Submit Picture", toolbar)
         toolbar.addAction(paintClearAction)
-        paintClearAction.triggered.connect(self.widget.submitCustomPicture)
+        paintClearAction.triggered.connect(self.submitCustomPicture)
         layout.setMenuBar(toolbar)
         layout.addWidget(self.widget)
+
+    def submitCustomPicture(self):
+        self.widget.submitPicture()
+        self.close()
