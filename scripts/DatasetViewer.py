@@ -5,6 +5,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QApplication
 from photoViewerWindow import photoViewerWindow
+from PIL import Image
 
 
 class datasetViewer():
@@ -18,5 +19,4 @@ class datasetViewer():
         self.w = photoViewerWindow()
         for file in os.listdir(self.folderDir):
             fileDir = os.path.join(self.folderDir, file)
-            self.w.showPhoto(fileDir)
-        
+            self.w.showPhoto(fileDir)  

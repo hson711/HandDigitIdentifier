@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from PyQt5.QtWidgets import (QWidget, QSlider, QLineEdit, QLabel, QPushButton, QScrollArea,QApplication,QHBoxLayout, QVBoxLayout, QMainWindow)
 from PyQt5.QtCore import Qt, QSize
 from PyQt5 import QtWidgets, uic
@@ -34,11 +35,11 @@ class photoViewerWindow(QMainWindow):
 
     def showPhoto(self, photoFileDir):
         pm = QPixmap(photoFileDir)
-        larger_pm = pm.scaled(1024,1024)
-        imageLabel = QLabel(self)
-        imageLabel.setPixmap(larger_pm)
-        imageLabel.resize(3600,3600)
-        self.vbox.addWidget(imageLabel)
+        if not pm.isNull():
+            larger_pm = pm.scaled(1024,1024)
+            imageLabel = QLabel(self)
+            imageLabel.setPixmap(larger_pm)
+            self.vbox.addWidget(imageLabel)
     
     #taken from https://stackoverflow.com/questions/65463848/pyqt5-fromiccprofile-failed-minimal-tag-size-sanity-error
     def convert_to_srgb(file_path):
