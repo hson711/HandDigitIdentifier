@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5 import QtCore, QtGui, QtWidgets
 from QSideWindow import sideWindow
 from customPainter import customPainter, SecondExample
+from DatasetViewer import datasetViewer
 
 class Window(QMainWindow):
     """Main Window."""
@@ -38,16 +39,21 @@ class Window(QMainWindow):
         datasetAction = self.menu.addAction('&Custom Prediction')
         datasetAction.triggered.connect(self.openCustomPainter)
         self.menu = self.menu.addAction('&View Dataset')
+        self.menu.triggered.connect(self.viewDatasetPhotos)
     
     def openCustomPainter(self, checked):
-        self.w = SecondExample()
-        self.w.show()
+        self.customPainterWindow = SecondExample()
+        self.customPainterWindow.show()
 
     def importDataset(self):
         name, done1 = QtWidgets.QInputDialog.getText(
              self, 'Input Dialog', 'Enter dataset to import:')
         if done1:
             print(name)
+    
+    def viewDatasetPhotos(self):
+        self.viewDataset = datasetViewer()
+        
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
