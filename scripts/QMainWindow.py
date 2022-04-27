@@ -15,6 +15,7 @@ from QSideWindow import sideWindow
 from customPainter import customPainter, SecondExample
 from DatasetViewer import datasetViewer
 
+
 class Window(QMainWindow):
     """Main Window."""
     def __init__(self, parent=None):
