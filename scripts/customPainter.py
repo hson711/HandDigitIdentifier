@@ -49,8 +49,12 @@ class customPainter(QtWidgets.QLabel):
         self.points << e.pos()
         self.update()
 
-    def clearPaint(self):
-        self.clear = True
+    def submitCustomPicture(self):
+        screen = QApplication.primaryScreen()
+        screenshot = screen.grabWindow(self.winId() )
+        screenshot.save('screenshot.png', 'png')
+        print("help")
+
 
 class SecondExample(QDialog):
     def __init__(self):
@@ -64,8 +68,6 @@ class SecondExample(QDialog):
         toolbar = QMenuBar()
         paintClearAction = QAction("Clear Paint", toolbar)
         toolbar.addAction(paintClearAction)
-        #paintClearAction.triggered.connect(self.widget.clearPaint)
-
-
+        paintClearAction.triggered.connect(self.widget.submitCustomPicture)
         layout.setMenuBar(toolbar)
         layout.addWidget(self.widget)
