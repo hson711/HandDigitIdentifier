@@ -13,12 +13,10 @@ class Thread(QThread):
         super(Thread, self).__init__(*args, **kwargs)
         self.count   = 0
         self.running = True
-        self.maxValue = 1000
 
     def run(self):
-        while self.running and self.count < self.maxValue:
+        while self.running :
             DNNFunctions.loadEMNIST()
-            self.count += 1
             self.update_signal.emit(self.count)
 
     def stop(self):
@@ -33,10 +31,10 @@ class updateThread(QThread):
         self.running = True
 
     def run(self):
-        while self.running and self.count < 100:
+        while self.running and self.count < 1000:
             self.count += 1
             self.update_signal.emit(self.count)
-            QThread.msleep(100)                   
+            QThread.msleep(100)                 
 
     def stop(self):
         self.running = False
@@ -52,7 +50,7 @@ class importDatasetScreen(QDialog):
         self.setWindowTitle('Importing')
         self.progress = QProgressBar()
         self.progress.setGeometry(0, 0, 1000, 100)
-        self.progress.setMaximum(100)
+        self.progress.setMaximum(1000)
         self.progress.setValue(0)
 
         vbox = QVBoxLayout()
@@ -99,7 +97,7 @@ class importDatasetScreen(QDialog):
 
     def update(self, val):
         self.progress.setValue(val)
-        if val == 1000: self.on_stop()
+        if val == 1000: self.thread1.stop()
 
     def on_stop(self):
         self.thread2.stop()
