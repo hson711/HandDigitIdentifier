@@ -7,32 +7,13 @@ import numpy as np
 import struct
 import random
 import gzip
+from extra_keras_datasets import emnist
 
+def rotate(image):
+    image = np.fliplr(image)
+    image = np.rot90(image)
+    return image
 
-def read_idx(filename):
-    with gzip.open(filename, 'rb') as f:
-        z, dtype, dim = struct.unpack('>HBB', f.read(4))
-        
-        shape = tuple(struct.unpack('>I', f.read(4))[0] for d in range(dim))
-        
-        #Check values of files
-        # print("Dimensions: ", dim)
-        # print("Shape: ", shape)
-
-        return np.frombuffer(f.read(), dtype=np.uint8).reshape(shape)
-
-def load_emnist():
-    train_images = dnld_path + 'emnist-byclass-train-images-idx3-ubyte.gz'
-    train_labels = dnld_path + 'emnist-byclass-train-labels-idx1-ubyte.gz'
-    test_images = dnld_path + 'emnist-byclass-test-images-idx3-ubyte.gz'
-    test_labels = dnld_path + 'emnist-byclass-test-labels-idx1-ubyte.gz'
-
-    train_x = read_idx(train_images)
-    train_y = read_idx(train_labels)
-    test_x = read_idx(test_images)
-    test_y = read_idx(test_labels)
-
-    return (train_x, train_y, test_x, test_y)
 
 if __name__ == '__main__':
 
@@ -41,12 +22,11 @@ if __name__ == '__main__':
     dnld_path = proj_path + r'datafiles/'
 
 
-    raw_train_x, raw_train_y, raw_test_x, raw_test_y = load_emnist()
+    (raw_train_x, raw_train_y), (raw_test_x, raw_test_y) = emnist.load_data(type='byclass')
 
-    # plt.imshow(raw_train_x[112358].T, cmap='gray')
-    # plt.colorbar()
-    # plt.show()
-
+    plt.imshow(raw_train_x[0], cmap='gray')
+    plt.colorbar()
+    plt.show()
 
     #Labels used to define the values of the images
     labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
@@ -55,7 +35,7 @@ if __name__ == '__main__':
 
     # for x in range(raw_train_x.shape[0]):
     #     ax.clear()
-    #     ax.imshow([i for i in 255 - raw_train_x[x].T], cmap='gray')
+    #     ax.imshow([i for i in 255 - raw_train_x[x]], cmap='gray')
     #     title = 'label = %d = %s' % (raw_train_y[x], labels[raw_train_y[x]])
     #     ax.set_title(title, fontsize=20)
     #     plt.pause(1)
@@ -79,11 +59,9 @@ if __name__ == '__main__':
     test_x = test_x/255
 
 
-    # plt.imshow(train_x.reshape(len(train_x),28,28)[112358].T, cmap='gray')
+    # plt.imshow(train_x.reshape(len(train_x),28,28)[112358], cmap='gray')
     # plt.colorbar()
     # plt.show()
-
-    n_cat = len(labels)
 
     train_y = keras.utils.np_utils.to_categorical(raw_train_y)
     test_y = keras.utils.np_utils.to_categorical(raw_test_y)
@@ -121,6 +99,6 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(15,8))
     for i in range(10):
         fig.add_subplot(2,5,i+1, aspect='equal')
-        plt.imshow(raw_test_x[sample[i]].T, cmap='gray')
+        plt.imshow(raw_test_x[sample[i]], cmap='gray')
         plt.title('Pred: {}'.format(labels[resultLabels[i]]))
     plt.show()
