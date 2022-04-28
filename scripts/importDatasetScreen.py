@@ -1,23 +1,25 @@
 import sys
+from xmlrpc.client import Boolean
 from PyQt5.QtWidgets import (QApplication, QDialog, QProgressBar, QPushButton, QVBoxLayout, QHBoxLayout)
 from PyQt5.QtCore import QThread, pyqtSignal
 from DNNFunctions import *
 import contextlib
 import io
+import threading
 
 
 class Thread(QThread):
-    update_signal = pyqtSignal(int) 
+    update_signal = pyqtSignal(Boolean) 
 
     def __init__(self, *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
-        self.count   = 0
+        self.Finished   = False
         self.running = True
 
     def run(self):
         while self.running :
             DNNFunctions.loadEMNIST()
-            self.update_signal.emit(self.count)
+            self.stop()
 
     def stop(self):
         self.running = False
@@ -52,6 +54,7 @@ class importDatasetScreen(QDialog):
         self.progress.setGeometry(0, 0, 1000, 100)
         self.progress.setMaximum(1000)
         self.progress.setValue(0)
+        self.savedEMNIST = False
 
         vbox = QVBoxLayout()
         hbox = QHBoxLayout()
@@ -82,6 +85,7 @@ class importDatasetScreen(QDialog):
         self.thread2 = Thread()
         self.thread1 = updateThread()
         self.thread1.update_signal.connect(self.update)
+        self.thread2.update_signal.connect(self.downloaded)
 
     def onButtonClick(self):
         self.button2.setEnabled(True)
@@ -97,7 +101,7 @@ class importDatasetScreen(QDialog):
 
     def update(self, val):
         self.progress.setValue(val)
-        if val == 1000: self.thread1.stop()
+        if val == 1000: self.on_stop()
 
     def on_stop(self):
         self.thread2.stop()
@@ -108,4 +112,6 @@ class importDatasetScreen(QDialog):
 
     def clearCache(self):
         DNNFunctions.clearCache()
-    
+
+    def downloaded(self):
+        self.savedEMNIST = True

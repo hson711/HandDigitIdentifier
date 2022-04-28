@@ -11,16 +11,25 @@ import struct
 import random
 import gzip
 import os
+import gzip
 from extra_keras_datasets import emnist
+from scipy import io as sio
+from PIL.ImageQt import ImageQt 
+from PIL import Image
+from PyQt5.QtGui import QPixmap
+import cv2
 
 
 class DNNFunctions():
     
     #Class Variable
     (raw_train_x, raw_train_y), (raw_test_x, raw_test_y) = (NULL, NULL), (NULL, NULL)
+
     location = "C:/Users/useR/.keras/datasets"
     file = 'emnist_matlab.npz'
     pathFile = os.path.join(location, file)
+
+    labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
     def __init__(self):
         return
@@ -32,14 +41,36 @@ class DNNFunctions():
         return image
     
     def loadEMNIST():
-        (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = emnist.load_data(type='byclass')
-        plt.imshow(DNNFunctions.raw_train_x[0], cmap='gray')
-        plt.colorbar()
-        plt.show()
+        if os.path.isfile(DNNFunctions.pathFile) == False:
+            (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = emnist.load_data(type='byclass')
+        else:
+            DNNFunctions.openPreDownloadedDataset()
+
     
     def clearCache():
         if os.path.isfile(DNNFunctions.pathFile) == True:
             os.remove(DNNFunctions.pathFile)
+
+    def openPreDownloadedDataset():
+        mat = sio.loadmat(DNNFunctions.pathFile)
+        data = mat["dataset"]
+
+        input_train = data["train"][0, 0]["images"][0, 0]
+        DNNFunctions.raw_train_y = data["train"][0, 0]["labels"][0, 0].flatten()
+        input_test = data["test"][0, 0]["images"][0, 0]
+        DNNFunctions.raw_test_y = data["test"][0, 0]["labels"][0, 0].flatten()
+
+        DNNFunctions.raw_train_x = input_train.reshape(
+          (input_train.shape[0], 28, 28), order="F"
+        )
+        DNNFunctions.raw_test_x = input_test.reshape(
+          (input_test.shape[0], 28, 28), order="F"
+        )
+    
+    def convertCvImage2QtImage(cv_img):
+        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+        PIL_image = Image.fromarray(rgb_image).convert('RGB')
+        return QPixmap.fromImage(ImageQt(PIL_image))
 
 
 
