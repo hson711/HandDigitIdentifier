@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from QSideWindow import sideWindow
 from DatasetViewer import datasetViewer
 from customPredicionHub import customPredicionHub
+from importDatasetScreen import importDatasetScreen
 
 
 class Window(QMainWindow):
@@ -47,10 +48,8 @@ class Window(QMainWindow):
         self.customPredictionHub.show()
 
     def importDataset(self):
-        name, done1 = QtWidgets.QInputDialog.getText(
-             self, 'Input Dialog', 'Enter dataset to import:')
-        if done1:
-            print(name)
+        self.importDatasetScreen = importDatasetScreen()
+        self.importDatasetScreen.show()
     
     def viewDatasetPhotos(self):
         self.viewDataset = datasetViewer()
