@@ -9,7 +9,7 @@ import threading
 
 
 class Thread(QThread):
-    update_signal = pyqtSignal(Boolean) 
+    update_signal1 = pyqtSignal(Boolean) 
 
     def __init__(self, string,  *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
@@ -20,13 +20,14 @@ class Thread(QThread):
     def run(self):
         while self.running :
             DNNFunctions.loadEMNIST(self.string)
+            self.update_signal1.emit(True)
             self.stop()
 
     def stop(self):
         self.running = False
 
 class updateThread(QThread):
-    update_signal = pyqtSignal(int) 
+    update_signal2 = pyqtSignal(int) 
 
     def __init__(self, *args, **kwargs):
         super(updateThread, self).__init__(*args, **kwargs)
@@ -36,7 +37,7 @@ class updateThread(QThread):
     def run(self):
         while self.running and self.count < 1000:
             self.count += 1
-            self.update_signal.emit(self.count)
+            self.update_signal2.emit(self.count)
             QThread.msleep(100)                 
 
     def stop(self):
@@ -86,8 +87,8 @@ class importDatasetScreen(QDialog):
         temp = self.string
         self.thread2 = Thread(string=(self.string))
         self.thread1 = updateThread()
-        self.thread1.update_signal.connect(self.update)
-        self.thread2.update_signal.connect(self.downloaded)
+        self.thread1.update_signal2.connect(self.update)
+        self.thread2.update_signal1.connect(self.downloaded)
 
     def onButtonClick(self):
         self.button2.setEnabled(True)
@@ -116,4 +117,4 @@ class importDatasetScreen(QDialog):
         DNNFunctions.clearCache()
 
     def downloaded(self):
-        self.savedEMNIST = True
+        self.close()
