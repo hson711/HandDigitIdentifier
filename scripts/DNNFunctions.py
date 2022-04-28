@@ -86,9 +86,6 @@ class DNNFunctions():
                 (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = (input_train, target_train), (input_test, target_test)
 
 
-
-        
-    
     def convertCvImage2QtImage(cv_img):
         rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
         PIL_image = Image.fromarray(rgb_image).convert('RGB')
