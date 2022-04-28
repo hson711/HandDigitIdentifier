@@ -12,8 +12,8 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5 import QtCore, QtGui, QtWidgets
 from QSideWindow import sideWindow
-from customPainter import customPainter, SecondExample
 from DatasetViewer import datasetViewer
+from customPredicionHub import customPredicionHub
 
 
 class Window(QMainWindow):
@@ -43,8 +43,8 @@ class Window(QMainWindow):
         self.menu.triggered.connect(self.viewDatasetPhotos)
     
     def openCustomPainter(self, checked):
-        self.customPainterWindow = SecondExample()
-        self.customPainterWindow.show()
+        self.customPredictionHub = customPredicionHub()
+        self.customPredictionHub.show()
 
     def importDataset(self):
         name, done1 = QtWidgets.QInputDialog.getText(

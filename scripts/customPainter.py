@@ -52,7 +52,7 @@ class customPainter(QtWidgets.QLabel):
         screenshot.save('screenshot.png', 'png')
 
 
-class SecondExample(QDialog):
+class ToolbarWindow(QDialog):
 
     def __init__(self):
         super().__init__()
