@@ -1,6 +1,9 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QDialog, QProgressBar, QPushButton, QVBoxLayout, QHBoxLayout)
 from PyQt5.QtCore import QThread, pyqtSignal
+from DNNFunctions import *
+import contextlib
+import io
 
 
 class Thread(QThread):
@@ -8,6 +11,24 @@ class Thread(QThread):
 
     def __init__(self, *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
+        self.count   = 0
+        self.running = True
+        self.maxValue = 1000
+
+    def run(self):
+        while self.running and self.count < self.maxValue:
+            DNNFunctions.loadEMNIST()
+            self.count += 1
+            self.update_signal.emit(self.count)
+
+    def stop(self):
+        self.running = False
+
+class updateThread(QThread):
+    update_signal = pyqtSignal(int) 
+
+    def __init__(self, *args, **kwargs):
+        super(updateThread, self).__init__(*args, **kwargs)
         self.count   = 0
         self.running = True
 
@@ -30,7 +51,7 @@ class importDatasetScreen(QDialog):
     def initUI(self):
         self.setWindowTitle('Importing')
         self.progress = QProgressBar()
-        self.progress.setGeometry(0, 0, 300, 100)
+        self.progress.setGeometry(0, 0, 1000, 100)
         self.progress.setMaximum(100)
         self.progress.setValue(0)
 
@@ -46,32 +67,47 @@ class importDatasetScreen(QDialog):
         self.button2 = QPushButton('Stop')
         self.button2.setStyleSheet('background-color:yellow')
         self.button2.setEnabled(False)
+        self.button3 = QPushButton('Clear Cache')
+        self.button3.setStyleSheet('background-color:yellow')
 
         vbox.addWidget(self.progress)
         hbox.addWidget(self.button)
         hbox.addWidget(self.button2)
+        hbox.addWidget(self.button3)
         vbox.addLayout(hbox)
         self.setLayout(vbox)
 
         self.button.clicked.connect(self.onButtonClick)
         self.button2.clicked.connect(self.on_stop)
+        self.button3.clicked.connect(self.clearCache)
 
-        self.thread = Thread()
-        self.thread.update_signal.connect(self.update)
+        self.thread2 = Thread()
+        self.thread1 = updateThread()
+        self.thread1.update_signal.connect(self.update)
 
     def onButtonClick(self):
         self.button2.setEnabled(True)
         self.progress.setValue(0)
-        self.thread.running = True
-        self.thread.count = 0
-        self.thread.start()
+        self.thread2.running = True
+        self.thread2.count = 0
+        self.thread2.start()
+        self.thread1.running = True
+        self.thread1.count = 0
+        self.thread1.start()
         self.button.setEnabled(False)
+        self.button3.setEnabled(False)
 
     def update(self, val):
         self.progress.setValue(val)
-        if val == 100: self.on_stop()
+        if val == 1000: self.on_stop()
 
     def on_stop(self):
-        self.thread.stop()
+        self.thread2.stop()
+        self.thread1.stop()
         self.button.setEnabled(True)
+        self.button3.setEnabled(True)
         self.button2.setEnabled(False)
+
+    def clearCache(self):
+        DNNFunctions.clearCache()
+    

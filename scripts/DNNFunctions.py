@@ -1,3 +1,6 @@
+from asyncio.windows_events import NULL
+from importlib.resources import path
+from typing_extensions import Self
 import keras
 from keras.models import load_model
 from keras.models import Sequential
@@ -7,21 +10,40 @@ import numpy as np
 import struct
 import random
 import gzip
+import os
 from extra_keras_datasets import emnist
 
-def rotate(image):
-    image = np.fliplr(image)
-    image = np.rot90(image)
-    return image
+
+class DNNFunctions():
+    
+    #Class Variable
+    (raw_train_x, raw_train_y), (raw_test_x, raw_test_y) = (NULL, NULL), (NULL, NULL)
+    location = "C:/Users/useR/.keras/datasets"
+    file = 'emnist_matlab.npz'
+    pathFile = os.path.join(location, file)
+
+    def __init__(self):
+        return
+
+        
+    def rotate(image):
+        image = np.fliplr(image)
+        image = np.rot90(image)
+        return image
+    
+    def loadEMNIST():
+        (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = emnist.load_data(type='byclass')
+        plt.imshow(DNNFunctions.raw_train_x[0], cmap='gray')
+        plt.colorbar()
+        plt.show()
+    
+    def clearCache():
+        if os.path.isfile(DNNFunctions.pathFile) == True:
+            os.remove(DNNFunctions.pathFile)
 
 
-if __name__ == '__main__':
 
-    #Set the path where the .gz files are located
-    proj_path = r'C:/Users/Hemanth/OneDrive - The University of Auckland/UNI-Hemanth/2022/COMPSYS 302/Project1 tests/data/'
-    dnld_path = proj_path + r'datafiles/'
-
-
+"""
     (raw_train_x, raw_train_y), (raw_test_x, raw_test_y) = emnist.load_data(type='byclass')
 
     plt.imshow(raw_train_x[0], cmap='gray')
@@ -102,3 +124,4 @@ if __name__ == '__main__':
         plt.imshow(raw_test_x[sample[i]], cmap='gray')
         plt.title('Pred: {}'.format(labels[resultLabels[i]]))
     plt.show()
+    """
