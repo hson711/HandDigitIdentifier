@@ -9,8 +9,6 @@ class customPredicionHub(QMainWindow):
     
     def initUI(self):
         self.setWindowTitle("Choose custom prediction option")
-        widget = QWidget()
-        layout = QHBoxLayout()
         self.setGeometry(300, 300, 400, 300)
         button1 = QPushButton('Premade Photos', self)
         button1.move(50,125)
