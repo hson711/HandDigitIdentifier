@@ -11,14 +11,15 @@ import threading
 class Thread(QThread):
     update_signal = pyqtSignal(Boolean) 
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, string,  *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
         self.Finished   = False
+        self.string = string
         self.running = True
 
     def run(self):
         while self.running :
-            DNNFunctions.loadEMNIST()
+            DNNFunctions.loadEMNIST(self.string)
             self.stop()
 
     def stop(self):
@@ -44,8 +45,9 @@ class updateThread(QThread):
 
 class importDatasetScreen(QDialog):
 
-    def __init__(self):
+    def __init__(self,string):
         super().__init__()
+        self.string = string
         self.initUI()
 
     def initUI(self):
@@ -81,8 +83,8 @@ class importDatasetScreen(QDialog):
         self.button.clicked.connect(self.onButtonClick)
         self.button2.clicked.connect(self.on_stop)
         self.button3.clicked.connect(self.clearCache)
-
-        self.thread2 = Thread()
+        temp = self.string
+        self.thread2 = Thread(string=(self.string))
         self.thread1 = updateThread()
         self.thread1.update_signal.connect(self.update)
         self.thread2.update_signal.connect(self.downloaded)

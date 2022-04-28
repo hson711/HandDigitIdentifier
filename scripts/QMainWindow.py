@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from QSideWindow import sideWindow
 from DatasetViewer import datasetViewer
 from customPredicionHub import customPredicionHub
-from importDatasetScreen import importDatasetScreen
+from dropDownDatasets import dropDownDatasets
 
 
 class Window(QMainWindow):
@@ -48,8 +48,8 @@ class Window(QMainWindow):
         self.customPredictionHub.show()
 
     def importDataset(self):
-        self.importDatasetScreen = importDatasetScreen()
-        self.importDatasetScreen.show()
+        self.dropDownDatasets = dropDownDatasets()
+        self.dropDownDatasets.show()
     
     def viewDatasetPhotos(self):
         self.viewDataset = datasetViewer()

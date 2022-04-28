@@ -45,6 +45,7 @@ class photoViewerWindow(QMainWindow):
         self.setWindowTitle('Scroll Area Demonstration')
         self.show()
 
+
     def showPhoto(self, photoFileDir):
         pm = QPixmap(photoFileDir)
         if not pm.isNull():
