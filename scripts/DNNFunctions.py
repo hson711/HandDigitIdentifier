@@ -14,12 +14,14 @@ import gzip
 import os
 import gzip
 from extra_keras_datasets import emnist
+from pandas import array
 from scipy import io as sio
 from PIL.ImageQt import ImageQt 
 from PIL import Image
 from PyQt5.QtGui import QPixmap
 import cv2
-import numpy
+import numpy, scipy.io, zipfile
+
 
 
 class DNNFunctions():
@@ -51,18 +53,40 @@ class DNNFunctions():
         if os.path.isfile(DNNFunctions.pathFile) == False:
             (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = emnist.load_data(type='byclass')
         else:
-            print(string)
-            DNNFunctions.openPreDownloadedDataset()
+            DNNFunctions.openPreDownloadedDataset(string)
 
     
     def clearCache():
         if os.path.isfile(DNNFunctions.pathFile) == True:
             os.remove(DNNFunctions.pathFile)
 
-    def openPreDownloadedDataset():
+    def openPreDownloadedDataset(string):
         numpyObject = numpy.load(DNNFunctions.pathFile)
         DNNFunctions.keys = numpyObject.keys()
-    
+        #arrayData = numpyObject[string]
+        #mat = scipy.io.loadmat(string)
+        #print(mat[0])
+        with zipfile.ZipFile(DNNFunctions.pathFile, 'r') as opened_zip:
+            with opened_zip.open(string, mode = 'r') as dataSetFile:
+
+                mat = sio.loadmat(dataSetFile)
+                data = mat["dataset"]
+
+                input_train = data["train"][0, 0]["images"][0, 0]
+                target_train = data["train"][0, 0]["labels"][0, 0].flatten()
+                input_test = data["test"][0, 0]["images"][0, 0]
+                target_test = data["test"][0, 0]["labels"][0, 0].flatten()
+
+                input_train = input_train.reshape(
+                    (input_train.shape[0], 28, 28), order="F"
+                )
+                input_test = input_test.reshape(
+                    (input_test.shape[0], 28, 28), order="F"
+                )
+                (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = (input_train, target_train), (input_test, target_test)
+
+
+
         
     
     def convertCvImage2QtImage(cv_img):
