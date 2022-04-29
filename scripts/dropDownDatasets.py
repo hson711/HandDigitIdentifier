@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from PyQt5.QtWidgets import QComboBox, QMainWindow, QApplication, QWidget, QVBoxLayout
 from PyQt5.QtGui import QIcon
 import sys
@@ -12,9 +13,11 @@ class dropDownDatasets(QMainWindow):
 
         self.setWindowTitle('Chose dataset to use')
         self.combobox = QComboBox()
-        for k in DNNFunctions.keys:
-            self.combobox.addItem(k)
-        
+
+        if DNNFunctions.keys != NULL:
+            for k in DNNFunctions.keys:
+                self.combobox.addItem(k)
+
         layout = QVBoxLayout()
         layout.addWidget(self.combobox)
         self.setCentralWidget(self.combobox)
