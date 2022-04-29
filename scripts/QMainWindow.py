@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import sys
 from PyQt5.QtWidgets import QInputDialog, QLineEdit, QFileDialog
 from PyQt5.QtGui import QIcon
@@ -12,9 +13,10 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5 import QtCore, QtGui, QtWidgets
 from QSideWindow import sideWindow
-from DatasetViewer import datasetViewer
 from customPredicionHub import customPredicionHub
 from dropDownDatasets import dropDownDatasets, dropDownPhotoViewer
+from DNNFunctions import DNNFunctions
+from importDatasetScreen import importDatasetScreen
 
 
 class Window(QMainWindow):
@@ -48,7 +50,10 @@ class Window(QMainWindow):
         self.customPredictionHub.show()
 
     def importDataset(self):
-        self.dropDownDatasets = dropDownDatasets()
+        if DNNFunctions.keys == NULL:
+            self.dropDownDatasets = dropDownDatasets()
+        else:
+            self.dropDownDatasets = importDatasetScreen("")
         self.dropDownDatasets.show()
     
     def viewDatasetPhotos(self):
