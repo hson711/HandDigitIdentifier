@@ -39,8 +39,8 @@ class Window(QMainWindow):
             msg.exec_()
         else:
             self.trainWindow = QWidget()
-            ui = Ui_trainWindow()
-            ui.setupUi(self.trainWindow)
+            trainUi = Ui_trainWindow()
+            trainUi.setupUi(self.trainWindow)
             self.trainWindow.show()
 
     def _createMenu(self):
