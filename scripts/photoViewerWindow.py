@@ -12,6 +12,8 @@ from PIL import Image, ImageCms
 import os
 from DNNFunctions import DNNFunctions
 import threading
+import numpy as np
+from statisticsWindow import statisticsWindow
 
 class photoViewerWindow(QMainWindow):
     def __init__(self,set):
@@ -29,11 +31,16 @@ class photoViewerWindow(QMainWindow):
         self.set = set
 
         toolbar = QMenuBar()
+
         filterPhotosAction = QAction("Filter", toolbar)
         toolbar.addAction(filterPhotosAction)
         filterPhotosAction.triggered.connect(self.filterPhotos)
-        self.layout.setMenuBar(toolbar)
 
+        statisticsAction = QAction("Statistics",toolbar)
+        statisticsAction.triggered.connect(self.statistics)
+        toolbar.addAction(statisticsAction)
+
+        self.layout.setMenuBar(toolbar)
         self.widget.setLayout(self.layout)
 
         #Scroll Area Properties
@@ -137,12 +144,19 @@ class photoViewerWindow(QMainWindow):
             string = (DNNFunctions.labels[self.datay[k]])
             if (filterText.upper() == string.upper()):
                 self.showPhotoSpecific(k)
-                
-
-            
+                            
     def clearLayout(self):
         for i in reversed(range(self.layout.count())): 
             self.layout.itemAt(i).widget().setParent(None)
         self.i = 0
         self.j = 0
         self.z = 0
+
+    def statistics(self):
+        countArr = np.bincount(self.datay)
+        for i in range(62):
+            count = 0
+            temp = DNNFunctions.labels[i]
+            count = countArr[i]
+            print("Total occurances of ", temp, " in array is ", count )
+        self.wStatistics = statisticsWindow(countArr)
