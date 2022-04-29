@@ -38,9 +38,10 @@ class Window(QMainWindow):
             msg.setWindowTitle("No dataset imported")
             msg.exec_()
         else:
-            window = QWidget()
-            window = uic.loadUi('testing3.ui')
-            window.show()
+            self.trainWindow = QWidget()
+            ui = Ui_trainWindow()
+            ui.setupUi(self.trainWindow)
+            self.trainWindow.show()
 
     def _createMenu(self):
         self.menu = self.menuBar().addMenu("&File")
