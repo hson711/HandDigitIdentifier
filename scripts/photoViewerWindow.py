@@ -158,5 +158,4 @@ class photoViewerWindow(QMainWindow):
             count = 0
             temp = DNNFunctions.labels[i]
             count = countArr[i]
-            print("Total occurances of ", temp, " in array is ", count )
         self.wStatistics = statisticsWindow(countArr)
