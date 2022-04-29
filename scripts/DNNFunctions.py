@@ -23,13 +23,9 @@ from PyQt5.QtGui import *
 from PyQt5 import *
 import cv2
 import numpy, scipy.io, zipfile
-<<<<<<< HEAD
 from PIL.ImageQt import ImageQt
 from torchvision.transforms import ToPILImage
 
-=======
-from PyQt5 import QtWidgets
->>>>>>> d93c34dc31a56935ea48ef5207eab458ced6b4b3
 
 
 class DNNFunctions():
