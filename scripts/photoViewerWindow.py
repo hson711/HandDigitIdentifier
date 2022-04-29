@@ -31,7 +31,7 @@ class photoViewerWindow(QMainWindow):
         toolbar = QMenuBar()
         filterPhotosAction = QAction("Filter", toolbar)
         toolbar.addAction(filterPhotosAction)
-        #filterPhotosAction.triggered.connect(self.filterPhotos)
+        filterPhotosAction.triggered.connect(self.filterPhotos)
         self.layout.setMenuBar(toolbar)
 
         self.widget.setLayout(self.layout)
@@ -57,7 +57,6 @@ class photoViewerWindow(QMainWindow):
         tempValue = (self.scrollBar.maximum())
         maxValue = round(tempValue * 1)
         minValue = round(tempValue * 0.95)
-        halfValue = round(tempValue * 0.5)
         if value >= minValue and value <= maxValue :
             self.showPhotoExsisting(self.lengthx, self.datax)
 
@@ -95,6 +94,20 @@ class photoViewerWindow(QMainWindow):
                 self.j = self.j + 1
                 self.z = self.z + 1
     
+    def showPhotoSpecific(self, photoID):
+        pm1 = DNNFunctions.convertNumpyArrayToImage(self.datax[photoID])
+        if not pm1.isNull():
+                imageLabel = QLabel(self)
+                imageLabel.setPixmap(pm1)
+                if self.j == 32:
+                    self.j = 0
+                    self.i = self.i + 1
+                self.layout.setColumnStretch(self.j,1)
+                self.layout.setRowStretch(self.i,1)
+                self.layout.addWidget(imageLabel,self.i,self.j)
+                self.j = self.j + 1
+                self.z = self.z + 1    
+    
     def loadData(self):
         if (self.set == 'Train Set'):
             self.lengthx = len(DNNFunctions.raw_train_x)
@@ -109,28 +122,27 @@ class photoViewerWindow(QMainWindow):
         self.showPhoto(self.lengthx, self.datax)
         
 
-    """
     def filterPhotos(self):
         filterText, done1 = QtWidgets.QInputDialog.getText(self, 'Filtering', 'Enter text to filter:')
         if done1:
             self.filteredPhotoViewer(filterText)
 
     def filteredPhotoViewer(self, filterText):
+        numberModule = self.layout.count()
         self.clearLayout()
-        for file in os.listdir(self.folderDir):
-            fileDir = os.path.join(self.folderDir, file)
-            fileName = fileDir.split("/")[-1]
-            fileName = fileName.split(".")[0]
-            fileName = fileName.split('\\')[-1]
-            #self.convert_to_srgb(fileDir) #this isn't working for some reason
-            if (filterText == ""):
-                self.showPhoto(fileDir)
-            elif (filterText.upper() in fileName.upper()):
-                self.showPhoto(fileDir)
+        if (filterText == ""):
+            self.showPhoto(self.lengthx, self.datax)
+            return
+        for k in range(1000):
+            string = (DNNFunctions.labels[self.datay[k]])
+            if (filterText.upper() == string.upper()):
+                self.showPhotoSpecific(k)
                 
+
+            
     def clearLayout(self):
         for i in reversed(range(self.layout.count())): 
             self.layout.itemAt(i).widget().setParent(None)
         self.i = 0
         self.j = 0
-        """
+        self.z = 0
