@@ -17,6 +17,7 @@ from customPredicionHub import customPredicionHub
 from dropDownDatasets import dropDownDatasets, dropDownPhotoViewer
 from DNNFunctions import DNNFunctions
 from importDatasetScreen import importDatasetScreen
+from PyQt5.QtWidgets import QMessageBox
 
 
 class Window(QMainWindow):
@@ -57,8 +58,17 @@ class Window(QMainWindow):
         self.dropDownDatasets.show()
     
     def viewDatasetPhotos(self):
-        self.viewDataset = dropDownPhotoViewer()
-        self.viewDataset.show()
+        if (DNNFunctions.data_loaded != True):
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('Dataset has not been imported. Please Import dataset to view')
+            msg.setWindowTitle("No dataset imported")
+            msg.exec_()
+            print(DNNFunctions.data_loaded)
+        else:
+            self.viewDataset = dropDownPhotoViewer()
+            self.viewDataset.show()
         
 
 if __name__ == '__main__':
