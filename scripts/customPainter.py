@@ -49,7 +49,7 @@ class customPainter(QtWidgets.QLabel):
     def submitPicture(self):
         screen = QApplication.primaryScreen()
         screenshot = screen.grabWindow(self.winId() )
-        screenshot.save('screenshot.png', 'png')
+        screenshot.save('../bin/screenshot.png', 'png')
 
 
 class ToolbarWindow(QDialog):

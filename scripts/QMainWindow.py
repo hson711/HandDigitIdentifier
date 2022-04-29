@@ -11,8 +11,8 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5 import QtCore, QtGui, QtWidgets
-from QSideWindow import sideWindow
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from QSideWindow import sideWindow, Ui_trainWindow
 from customPredicionHub import customPredicionHub
 from dropDownDatasets import dropDownDatasets, dropDownPhotoViewer
 from DNNFunctions import DNNFunctions
@@ -30,8 +30,18 @@ class Window(QMainWindow):
         self._createMenu()
         
     def openSideWindow(self, checked):
-        self.w = sideWindow()
-        self.w.show()
+        if (DNNFunctions.data_loaded != True):
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('Dataset has not been imported. Please Import dataset to train a model')
+            msg.setWindowTitle("No dataset imported")
+            msg.exec_()
+        else:
+            self.trainWindow = QWidget()
+            ui = Ui_trainWindow()
+            ui.setupUi(self.trainWindow)
+            self.trainWindow.show()
 
     def _createMenu(self):
         self.menu = self.menuBar().addMenu("&File")
@@ -45,6 +55,8 @@ class Window(QMainWindow):
         datasetAction.triggered.connect(self.openCustomPainter)
         self.menu = self.menu.addAction('&View Dataset')
         self.menu.triggered.connect(self.viewDatasetPhotos)
+
+
     
     def openCustomPainter(self, checked):
         self.customPredictionHub = customPredicionHub()
@@ -65,7 +77,6 @@ class Window(QMainWindow):
             msg.setInformativeText('Dataset has not been imported. Please Import dataset to view')
             msg.setWindowTitle("No dataset imported")
             msg.exec_()
-            print(DNNFunctions.data_loaded)
         else:
             self.viewDataset = dropDownPhotoViewer()
             self.viewDataset.show()
