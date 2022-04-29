@@ -120,6 +120,27 @@ class DNNFunctions():
         pix = QPixmap.fromImage(image)
         return pix
 
+    def train(epoch, batchSize, chosenOptimiser):
+        train_x = DNNFunctions.raw_train_x.reshape(len(DNNFunctions.raw_train_x), 784)
+        test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
+
+        train_x = train_x.astype('float32')
+        test_x = test_x.astype('float32')
+        train_x = train_x/255
+        test_x = test_x/255
+
+        train_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_train_y)
+        test_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_test_y)
+
+        DNNFunctions.model = keras.models.Sequential()
+        DNNFunctions.model.add(Dense(16,input_dim = 784, activation='relu'))
+        DNNFunctions.model.add(Dense(32,activation='relu'))
+        DNNFunctions.model.add(Dense(20,activation='relu'))
+        DNNFunctions.model.add(Dense(62,activation='softmax'))
+        DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
+        DNNFunctions.model.fit(train_x, train_y, epochs=epoch, batch_size=batchSize)
+
+
 #import numpy as np
 #>>> import Image
 #>>> im = Image.fromarray(np.random.randint(0,256,size=(100,100,3)).astype(np.uint8))
