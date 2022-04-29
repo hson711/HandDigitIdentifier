@@ -50,7 +50,7 @@ class Window(QMainWindow):
         self.customPredictionHub.show()
 
     def importDataset(self):
-        if DNNFunctions.keys == NULL:
+        if DNNFunctions.keys != NULL:
             self.dropDownDatasets = dropDownDatasets()
         else:
             self.dropDownDatasets = importDatasetScreen("")
