@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 from importlib.resources import path
+import pathlib
 from traceback import print_list
 from typing_extensions import Self
 import keras
@@ -21,16 +22,17 @@ from PIL import Image
 from PyQt5.QtGui import QPixmap
 import cv2
 import numpy, scipy.io, zipfile
-
+from PyQt5 import QtWidgets
 
 
 class DNNFunctions():
-    
+    data_loaded = False    
     #Class Variable
     (raw_train_x, raw_train_y), (raw_test_x, raw_test_y) = (NULL, NULL), (NULL, NULL)
 
     w = NULL
-    location = "C:/Users/useR/.keras/datasets"
+    user_home = str(pathlib.Path.home())
+    location = user_home + "\.keras\datasets"
     file = 'emnist_matlab.npz'
     pathFile = os.path.join(location, file)
     keys = NULL
@@ -55,6 +57,7 @@ class DNNFunctions():
         else:
             DNNFunctions.openPreDownloadedDataset(string)
 
+        DNNFunctions.data_loaded = True
     
     def clearCache():
         if os.path.isfile(DNNFunctions.pathFile) == True:
@@ -91,6 +94,12 @@ class DNNFunctions():
         PIL_image = Image.fromarray(rgb_image).convert('RGB')
         return QPixmap.fromImage(ImageQt(PIL_image))
 
+    # def save_model(self):
+    #     folderpath = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Folder')
+
+    #     #need to incorporate user input !!
+    #     file_name = "model_test"
+    #     self.model.save(folderpath+file_name+'.h')
 
 
 """
