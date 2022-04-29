@@ -18,9 +18,12 @@ from pandas import array
 from scipy import io as sio
 from PIL.ImageQt import ImageQt 
 from PIL import Image
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import *
+from PyQt5 import *
 import cv2
 import numpy, scipy.io, zipfile
+from PIL.ImageQt import ImageQt
+from torchvision.transforms import ToPILImage
 
 
 
@@ -84,12 +87,41 @@ class DNNFunctions():
                     (input_test.shape[0], 28, 28), order="F"
                 )
                 (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = (input_train, target_train), (input_test, target_test)
+                #print(DNNFunctions.raw_train_x*255)
+                """
+                print(DNNFunctions.raw_train_y.shape)
+                print(DNNFunctions.raw_test_x.shape)
+                print(DNNFunctions.raw_test_y.shape)
+                """
+                
 
 
     def convertCvImage2QtImage(cv_img):
-        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
-        PIL_image = Image.fromarray(rgb_image).convert('RGB')
-        return QPixmap.fromImage(ImageQt(PIL_image))
+        if len(cv_img.shape)<3:
+            frame = cv2.cvtColor(cv_img, cv2.COLOR_GRAY2RGB)
+        else:
+            frame = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+        h, w = cv_img.shape[:2]
+        bytesPerLine = 3 * w
+        qimage = QImage(frame.data, w, h, bytesPerLine, QImage.Format.Format_RGB888)
+        return qimage
+
+    def convertNumpyArrayToImage(np1):
+        img = ToPILImage()(np1)
+        qim = ImageQt(img)
+        pix = QPixmap.fromImage(qim)
+        return pix
+
+    def convertPILImageToPixmap(pilImage):
+        image = QImage(pilImage, pilImage.size[0], pilImage.size[1], QImage.Format_ARGB32)
+        pix = QPixmap.fromImage(image)
+        return pix
+
+#import numpy as np
+#>>> import Image
+#>>> im = Image.fromarray(np.random.randint(0,256,size=(100,100,3)).astype(np.uint8))
+#>>> im.show()
+        
 
 
 
