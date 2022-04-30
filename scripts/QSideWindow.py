@@ -27,7 +27,7 @@ class Ui_trainWindow(object):
         self.chosenOptimiser.addItem("")
         self.chosenOptimiser.addItem("")
         self.chosenEpoch = QtWidgets.QSpinBox(trainWindow)
-        self.chosenEpoch.setGeometry(QtCore.QRect(170, 80, 61, 31))
+        self.chosenEpoch.setGeometry(QtCore.QRect(180, 80, 61, 31))
         self.chosenEpoch.setMinimum(1)
         self.chosenEpoch.setObjectName("chosenEpoch")
         self.batchSize = QtWidgets.QSpinBox(trainWindow)
@@ -44,7 +44,7 @@ class Ui_trainWindow(object):
         self.header.setAlignment(QtCore.Qt.AlignCenter)
         self.header.setObjectName("header")
         self.subtext = QtWidgets.QLabel(trainWindow)
-        self.subtext.setGeometry(QtCore.QRect(160, 50, 71, 20))
+        self.subtext.setGeometry(QtCore.QRect(170, 50, 71, 20))
         self.subtext.setAlignment(QtCore.Qt.AlignCenter)
         self.subtext.setObjectName("subtext")
         self.label_3 = QtWidgets.QLabel(trainWindow)
@@ -55,7 +55,7 @@ class Ui_trainWindow(object):
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setObjectName("label_3")
         self.label_4 = QtWidgets.QLabel(trainWindow)
-        self.label_4.setGeometry(QtCore.QRect(150, 120, 101, 20))
+        self.label_4.setGeometry(QtCore.QRect(160, 120, 101, 20))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.label_4.setFont(font)
@@ -69,7 +69,7 @@ class Ui_trainWindow(object):
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(trainWindow)
-        self.label_6.setGeometry(QtCore.QRect(270, 180, 81, 20))
+        self.label_6.setGeometry(QtCore.QRect(270, 200, 81, 20))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.label_6.setFont(font)
@@ -81,17 +81,58 @@ class Ui_trainWindow(object):
         font.setPointSize(12)
         self.pushButton.setFont(font)
         self.pushButton.setObjectName("pushButton")
-        self.lineEdit = QtWidgets.QLineEdit(trainWindow)
-        self.lineEdit.setGeometry(QtCore.QRect(52, 200, 301, 20))
-        self.lineEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.lineEdit.setAutoFillBackground(False)
-        self.lineEdit.setText("")
-        self.lineEdit.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.lineEdit.setObjectName("lineEdit")
+        self.modelName = QtWidgets.QLineEdit(trainWindow)
+        self.modelName.setGeometry(QtCore.QRect(52, 220, 301, 20))
+        self.modelName.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.modelName.setAutoFillBackground(False)
+        self.modelName.setText("")
+        self.modelName.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.modelName.setObjectName("modelName")
+        self.horizontalSlider = QtWidgets.QSlider(trainWindow)
+        self.horizontalSlider.setGeometry(QtCore.QRect(50, 160, 301, 20))
+        self.horizontalSlider.setMaximum(100)
+        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
+        self.horizontalSlider.setTickInterval(10)
+        self.horizontalSlider.setObjectName("horizontalSlider")
+        self.label_7 = QtWidgets.QLabel(trainWindow)
+        self.label_7.setGeometry(QtCore.QRect(330, 180, 31, 20))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.label_7.setFont(font)
+        self.label_7.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_7.setObjectName("label_7")
+        self.label_8 = QtWidgets.QLabel(trainWindow)
+        self.label_8.setGeometry(QtCore.QRect(-40, 180, 191, 20))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.label_8.setFont(font)
+        self.label_8.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_8.setObjectName("label_8")
+        self.label_9 = QtWidgets.QLabel(trainWindow)
+        self.label_9.setGeometry(QtCore.QRect(100, 140, 201, 20))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.label_9.setFont(font)
+        self.label_9.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_9.setObjectName("label_9")
+        self.label_10 = QtWidgets.QLabel(trainWindow)
+        self.label_10.setGeometry(QtCore.QRect(350, 160, 41, 20))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.label_10.setFont(font)
+        self.label_10.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_10.setObjectName("label_10")
 
         self.retranslateUi(trainWindow)
-        self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value()))
         QtCore.QMetaObject.connectSlotsByName(trainWindow)
+
+        #Choosing the validation ratio
+        self.horizontalSlider.valueChanged[int].connect(self.updateSliderVal)
+
+        #Training the Model
+        self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value(), self.modelName.text()))
+    
 
     def retranslateUi(self, trainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -106,10 +147,16 @@ class Ui_trainWindow(object):
         self.label_5.setText(_translate("trainWindow", "Batch Size"))
         self.label_6.setText(_translate("trainWindow", "Model Name"))
         self.pushButton.setText(_translate("trainWindow", "Train the model"))
+        self.label_7.setText(_translate("trainWindow", "100"))
+        self.label_8.setText(_translate("trainWindow", "0"))
+        self.label_9.setText(_translate("trainWindow", "Split the training dataset for validation (%)"))
+        self.label_10.setText(_translate("trainWindow", "0%"))
+
+    def updateSliderVal(self, value):
+        self.label_10.setText(QtCore.QCoreApplication.translate("trainWindow", str(value)+"%"))
 
 
-
-    def train_model(checked,chosenOptimiser, chosenEpoch, batchSize):
+    def train_model(checked,chosenOptimiser, chosenEpoch, batchSize, modelName):
 
         #Note, the argument checked is used due to the functionality of qt5 buttons outputting with object call argument which can be considered as not requried for this function
         print("here")
@@ -117,9 +164,29 @@ class Ui_trainWindow(object):
         print(chosenEpoch)
         print(batchSize)
         #Can maybe add warning for high epoch
+        
 
-        DNNFunctions.train(chosenOptimiser, chosenEpoch, batchSize)
+        DNNFunctions.train(chosenOptimiser, chosenEpoch, batchSize, modelName)
         print("Training done") #For testing purposes
+
+        Ui_trainWindow.save_model_popup(Ui_trainWindow)
+    
+    
+    def save_model_popup(self):
+        msg = QMessageBox()
+        question = msg.question(self,'',"Do you want to save this model?",msg.Yes | msg.No)
+
+        if question==msg.Yes:
+            file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+            DNNFunctions.model.save(file+"/"+DNNFunctions.model.name+".h")
+
+    def model_saved_success():
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.information)
+        msg.setText("Save Successful")
+        msg.setInformativeText('Your model has been saved successfully ')
+        msg.setWindowTitle("Save Successful")
+        msg.exec_()
 
 
 class sideWindow(QWidget):

@@ -121,7 +121,7 @@ class DNNFunctions():
         pix = QPixmap.fromImage(image)
         return pix
 
-    def train(chosenOptimiser, chosenEpochs, batchSize):
+    def train(chosenOptimiser, chosenEpochs, batchSize, modelName):
         train_x = DNNFunctions.raw_train_x.reshape(len(DNNFunctions.raw_train_x), 784)
         test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
 
@@ -138,6 +138,7 @@ class DNNFunctions():
         DNNFunctions.model.add(Dense(32,activation='relu'))
         DNNFunctions.model.add(Dense(20,activation='relu'))
         DNNFunctions.model.add(Dense(62,activation='softmax'))
+        DNNFunctions.model._name = modelName
         DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
         DNNFunctions.model.fit(train_x, train_y, epochs=chosenEpochs, batch_size=batchSize)
 
