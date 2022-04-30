@@ -6,7 +6,10 @@ from DNNFunctions import *
 import contextlib
 import io
 import threading
-
+import gevent
+import subprocess
+from subprocess import *
+import time
 
 class Thread(QThread):
     update_signal1 = pyqtSignal(Boolean) 
@@ -19,12 +22,26 @@ class Thread(QThread):
 
     def run(self):
         while self.running :
-            DNNFunctions.loadEMNIST(self.string)
+            self.p = subprocess.Popen([sys.executable, 'C:\CodingTemp\CS302 Project 1\HandDigitIdentifier\scripts\SubprocessImporter.py', self.string], stdout = PIPE)
+            while True:
+                self.realtime_output = self.p.stdout.readline()
+
+                if self.realtime_output == '' and self.p.poll() is not None:
+                    break
+
+                if self.realtime_output:
+                    print(self.realtime_output.strip(), flush=True)
+            if self.p.poll() is None:
+                DNNFunctions.openPreDownloadedDataset(self.string)
+
+            #stdout, stderr = p.communicate()
+            #time.sleep(1000)
+            #DNNFunctions.loadEMNIST(self.string)
             self.update_signal1.emit(True)
-            self.stop()
 
     def stop(self):
         self.running = False
+        self.p.terminate()
 
 class updateThread(QThread):
     update_signal2 = pyqtSignal(int) 
@@ -84,7 +101,6 @@ class importDatasetScreen(QDialog):
         self.button.clicked.connect(self.onButtonClick)
         self.button2.clicked.connect(self.on_stop)
         self.button3.clicked.connect(self.clearCache)
-        temp = self.string
         self.thread2 = Thread(string=(self.string))
         self.thread1 = updateThread()
         self.thread1.update_signal2.connect(self.update)
@@ -117,4 +133,4 @@ class importDatasetScreen(QDialog):
         DNNFunctions.clearCache()
 
     def downloaded(self):
-        self.close()
+        return
