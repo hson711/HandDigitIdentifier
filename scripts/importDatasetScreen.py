@@ -9,10 +9,11 @@ import threading
 import gevent
 import subprocess
 from subprocess import *
-import time
+from PyQt5.QtWidgets import (QApplication, QWidget, QLineEdit, QTextBrowser, QPushButton, QVBoxLayout)
 
 class Thread(QThread):
-    update_signal1 = pyqtSignal(Boolean) 
+    update_signal1 = pyqtSignal(str)
+    update_signal3 = pyqtSignal(str)
 
     def __init__(self, string,  *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
@@ -23,14 +24,20 @@ class Thread(QThread):
     def run(self):
         while self.running :
             self.p = subprocess.Popen([sys.executable, 'C:\CodingTemp\CS302 Project 1\HandDigitIdentifier\scripts\SubprocessImporter.py', self.string], stdout = PIPE)
-            while True:
+            for i in range(5):
                 self.realtime_output = self.p.stdout.readline()
+            maxValue = self.realtime_output.decode("utf-8")
+            self.update_signal3.emit(maxValue.strip())
+            while True:
 
                 if self.realtime_output == '' and self.p.poll() is not None:
                     break
 
                 if self.realtime_output:
-                    print(self.realtime_output.strip(), flush=True)
+                    self.realtime_output = self.realtime_output.decode("utf-8")
+                    self.update_signal1.emit(self.realtime_output.strip())
+
+                self.realtime_output = self.p.stdout.readline()
             if self.p.poll() is None:
                 DNNFunctions.openPreDownloadedDataset(self.string)
 
@@ -52,7 +59,7 @@ class updateThread(QThread):
         self.running = True
 
     def run(self):
-        while self.running and self.count < 1000:
+        while self.running and self.count < importDatasetScreen.maxValue:
             self.count += 1
             self.update_signal2.emit(self.count)
             QThread.msleep(100)                 
@@ -62,6 +69,7 @@ class updateThread(QThread):
 
 
 class importDatasetScreen(QDialog):
+    maxValue = 1000
 
     def __init__(self,string):
         super().__init__()
@@ -71,8 +79,8 @@ class importDatasetScreen(QDialog):
     def initUI(self):
         self.setWindowTitle('Importing')
         self.progress = QProgressBar()
-        self.progress.setGeometry(0, 0, 1000, 100)
-        self.progress.setMaximum(1000)
+        self.progress.setGeometry(0, 0, 1000, 500)
+        self.progress.setMaximum(importDatasetScreen.maxValue)
         self.progress.setValue(0)
         self.savedEMNIST = False
 
@@ -90,7 +98,11 @@ class importDatasetScreen(QDialog):
         self.button2.setEnabled(False)
         self.button3 = QPushButton('Clear Cache')
         self.button3.setStyleSheet('background-color:yellow')
+        self.tb = QTextBrowser()
+        self.tb.setAcceptRichText(True)
+        self.tb.setOpenExternalLinks(True)
 
+        vbox.addWidget(self.tb)
         vbox.addWidget(self.progress)
         hbox.addWidget(self.button)
         hbox.addWidget(self.button2)
@@ -105,6 +117,7 @@ class importDatasetScreen(QDialog):
         self.thread1 = updateThread()
         self.thread1.update_signal2.connect(self.update)
         self.thread2.update_signal1.connect(self.downloaded)
+        self.thread2.update_signal3.connect(self.setMaximum)
 
     def onButtonClick(self):
         self.button2.setEnabled(True)
@@ -132,5 +145,22 @@ class importDatasetScreen(QDialog):
     def clearCache(self):
         DNNFunctions.clearCache()
 
-    def downloaded(self):
-        return
+    def downloaded(self,string):
+        string = string.strip()
+        string = string[-5:]
+        string = string.split(":")
+        min = int(string[0])
+        sec = int(string[1])
+        text = ("Time left till data is imported is ", str(min), " mins and ", str(sec), " seconds.\n" )
+        text = ("").join(text)
+        self.tb.append(text)
+
+    def setMaximum(self,value):
+        string = value.strip()
+        string = string[-5:]
+        string = string.split(":")
+        min = int(string[0]) * 60
+        sec = int(string[1])
+        time = min + sec
+        self.progress.setMaximum(time)
+        self.progress.setValue(0)
