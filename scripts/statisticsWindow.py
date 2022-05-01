@@ -15,7 +15,7 @@ class statisticsWindow(QWidget):
         self.tb.setAcceptRichText(True)
         self.tb.setOpenExternalLinks(True)
 
-        for i in range(62):
+        for i in range(len(DNNFunctions.labels)):
             self.temp = DNNFunctions.labels[i]
             self.count = array[i]
             text = ("Total occurances of ", str(self.temp), " in dataset is ", str(self.count), ".\n" )

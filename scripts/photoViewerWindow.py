@@ -65,7 +65,10 @@ class photoViewerWindow(QMainWindow):
         maxValue = round(tempValue * 1)
         minValue = round(tempValue * 0.95)
         if value >= minValue and value <= maxValue :
-            self.showPhotoExsisting(self.lengthx, self.datax)
+            if self.filterText == None:
+                self.showPhotoExsisting(self.lengthx, self.datax)
+            else:
+                self.showMoreFilteredPhotos(self.datax,self.filterText)
 
 
     def showPhoto(self, lengthx, datax):
@@ -83,6 +86,24 @@ class photoViewerWindow(QMainWindow):
                 self.layout.addWidget(imageLabel,self.i,self.j)
                 self.j = self.j + 1
                 self.z = self.z + 1
+
+    def showMoreFilteredPhotos(self,datax,filter):
+        temp = self.z
+        while self.z <= temp + 10000:
+            string = (DNNFunctions.labels[self.datay[self.z]])
+            if (filter.upper() == string.upper()):
+                pm1 = DNNFunctions.convertNumpyArrayToImage(datax[self.z])
+                if not pm1.isNull():
+                    imageLabel = QLabel(self)
+                    imageLabel.setPixmap(pm1)
+                    if self.j == 32:
+                        self.j = 0
+                        self.i = self.i + 1
+                    self.layout.setColumnStretch(self.j,1)
+                    self.layout.setRowStretch(self.i,1)
+                    self.layout.addWidget(imageLabel,self.i,self.j)
+                    self.j = self.j + 1
+            self.z = self.z + 1
     
     def showPhotoExsisting(self, lengthx, datax):
         datax = DNNFunctions.raw_train_x
@@ -138,9 +159,12 @@ class photoViewerWindow(QMainWindow):
         numberModule = self.layout.count()
         self.clearLayout()
         if (filterText == ""):
+            self.filterText = None
             self.showPhoto(self.lengthx, self.datax)
             return
-        for k in range(1000):
+        else:
+            self.filterText = filterText
+        for k in range(100000):
             string = (DNNFunctions.labels[self.datay[k]])
             if (filterText.upper() == string.upper()):
                 self.showPhotoSpecific(k)
@@ -154,8 +178,4 @@ class photoViewerWindow(QMainWindow):
 
     def statistics(self):
         countArr = np.bincount(self.datay)
-        for i in range(62):
-            count = 0
-            temp = DNNFunctions.labels[i]
-            count = countArr[i]
         self.wStatistics = statisticsWindow(countArr)
