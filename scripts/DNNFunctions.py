@@ -38,7 +38,7 @@ class DNNFunctions():
     location = user_home + "\.keras\datasets"
     file = 'emnist_matlab.npz'
     pathFile = os.path.join(location, file)
-    keys = NULL
+    keys = {'matlab/emnist-balanced.mat', 'matlab/emnist-byclass.mat', 'matlab/emnist-bymerge.mat', 'matlab/emnist-digits.mat', 'matlab/emnist-letters.mat', 'matlab/emnist-mnist.mat'}
     if os.path.isfile(pathFile) == True:
             numpyObject = numpy.load(pathFile)
             keys = numpyObject.keys()
@@ -70,6 +70,7 @@ class DNNFunctions():
     def openPreDownloadedDataset(string):
         numpyObject = numpy.load(DNNFunctions.pathFile)
         DNNFunctions.keys = numpyObject.keys()
+        DNNFunctions.data_loaded = True
         #arrayData = numpyObject[string]
         #mat = scipy.io.loadmat(string)
         #print(mat[0])

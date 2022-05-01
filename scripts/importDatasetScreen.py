@@ -2,6 +2,7 @@ import sys
 from xmlrpc.client import Boolean
 from PyQt5.QtWidgets import (QApplication, QDialog, QProgressBar, QPushButton, QVBoxLayout, QHBoxLayout)
 from PyQt5.QtCore import QThread, pyqtSignal
+from numpy import NaN, integer
 from DNNFunctions import *
 import contextlib
 import io
@@ -14,6 +15,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLineEdit, QTextBrowser, QPu
 class Thread(QThread):
     update_signal1 = pyqtSignal(str)
     update_signal3 = pyqtSignal(str)
+    closeSignal = pyqtSignal()
 
     def __init__(self, string,  *args, **kwargs):
         super(Thread, self).__init__(*args, **kwargs)
@@ -23,50 +25,33 @@ class Thread(QThread):
 
     def run(self):
         while self.running :
-            self.p = subprocess.Popen([sys.executable, 'C:\CodingTemp\CS302 Project 1\HandDigitIdentifier\scripts\SubprocessImporter.py', self.string], stdout = PIPE)
-            for i in range(5):
-                self.realtime_output = self.p.stdout.readline()
-            maxValue = self.realtime_output.decode("utf-8")
-            self.update_signal3.emit(maxValue.strip())
-            while True:
+            if os.path.isfile(DNNFunctions.pathFile) == False:
+                self.p = subprocess.Popen([sys.executable, 'C:\CodingTemp\CS302 Project 1\HandDigitIdentifier\scripts\SubprocessImporter.py', self.string], stdout = PIPE)
+                for i in range(5):
+                    self.realtime_output = self.p.stdout.readline()
+                maxValue = self.realtime_output.decode("cp1252")
+                self.update_signal3.emit(maxValue.strip())
+                while True:
+                    self.realtime_output = self.p.stdout.readline()
+                    if self.realtime_output == '' and self.p.poll() is None:
+                        DNNFunctions.openPreDownloadedDataset(self.string)
+                        self.closeSignal.emit()
+                        break
 
-                if self.realtime_output == '' and self.p.poll() is not None:
-                    break
-
-                if self.realtime_output:
-                    self.realtime_output = self.realtime_output.decode("utf-8")
-                    self.update_signal1.emit(self.realtime_output.strip())
-
-                self.realtime_output = self.p.stdout.readline()
-            if self.p.poll() is None:
+                    if self.realtime_output:
+                        self.realtime_output = self.realtime_output.decode("cp1252")
+                        self.update_signal1.emit(self.realtime_output.strip())
+            else:
                 DNNFunctions.openPreDownloadedDataset(self.string)
-
+                print(DNNFunctions.raw_train_y.shape)
+            
             #stdout, stderr = p.communicate()
             #time.sleep(1000)
             #DNNFunctions.loadEMNIST(self.string)
-            self.update_signal1.emit(True)
 
     def stop(self):
         self.running = False
         self.p.terminate()
-
-class updateThread(QThread):
-    update_signal2 = pyqtSignal(int) 
-
-    def __init__(self, *args, **kwargs):
-        super(updateThread, self).__init__(*args, **kwargs)
-        self.count   = 0
-        self.running = True
-
-    def run(self):
-        while self.running and self.count < importDatasetScreen.maxValue:
-            self.count += 1
-            self.update_signal2.emit(self.count)
-            QThread.msleep(100)                 
-
-    def stop(self):
-        self.running = False
-
 
 class importDatasetScreen(QDialog):
     maxValue = 1000
@@ -114,30 +99,24 @@ class importDatasetScreen(QDialog):
         self.button2.clicked.connect(self.on_stop)
         self.button3.clicked.connect(self.clearCache)
         self.thread2 = Thread(string=(self.string))
-        self.thread1 = updateThread()
-        self.thread1.update_signal2.connect(self.update)
         self.thread2.update_signal1.connect(self.downloaded)
         self.thread2.update_signal3.connect(self.setMaximum)
+        self.thread2.closeSignal.connect(self.close)
 
     def onButtonClick(self):
         self.button2.setEnabled(True)
         self.progress.setValue(0)
         self.thread2.running = True
-        self.thread2.count = 0
         self.thread2.start()
-        self.thread1.running = True
-        self.thread1.count = 0
-        self.thread1.start()
         self.button.setEnabled(False)
         self.button3.setEnabled(False)
 
     def update(self, val):
         self.progress.setValue(val)
-        if val == 1000: self.on_stop()
+        
 
     def on_stop(self):
         self.thread2.stop()
-        self.thread1.stop()
         self.button.setEnabled(True)
         self.button3.setEnabled(True)
         self.button2.setEnabled(False)
@@ -149,18 +128,30 @@ class importDatasetScreen(QDialog):
         string = string.strip()
         string = string[-5:]
         string = string.split(":")
-        min = int(string[0])
-        sec = int(string[1])
+        if  string[0].isdigit() and string[1].isdigit():
+            min = int(float(string[0]))
+            sec = int(float(string[1]))
+        else:
+            min = 0
+            sec = 0
+        minSec = min*60
+        deductableTime = minSec + sec
         text = ("Time left till data is imported is ", str(min), " mins and ", str(sec), " seconds.\n" )
         text = ("").join(text)
         self.tb.append(text)
+        tempMax = self.progress.maximum()
+        self.progress.setValue(tempMax-deductableTime)
 
     def setMaximum(self,value):
         string = value.strip()
         string = string[-5:]
         string = string.split(":")
-        min = int(string[0]) * 60
-        sec = int(string[1])
+        if  string[0].isdigit() and string[1].isdigit():
+            min = int(string[0]) * 60
+            sec = int(string[1])
+        else:
+            min = 0
+            sec = 0
         time = min + sec
         self.progress.setMaximum(time)
         self.progress.setValue(0)
