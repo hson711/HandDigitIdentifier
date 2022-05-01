@@ -33,7 +33,7 @@ class Thread(QThread):
                 self.update_signal3.emit(maxValue.strip())
                 while True:
                     self.realtime_output = self.p.stdout.readline()
-                    if self.realtime_output == '' and self.p.poll() is None:
+                    if self.p.poll() is not None:
                         DNNFunctions.openPreDownloadedDataset(self.string)
                         self.closeSignal.emit()
                         break
@@ -43,7 +43,7 @@ class Thread(QThread):
                         self.update_signal1.emit(self.realtime_output.strip())
             else:
                 DNNFunctions.openPreDownloadedDataset(self.string)
-                print(DNNFunctions.raw_train_y.shape)
+                self.closeSignal.emit()
             
             #stdout, stderr = p.communicate()
             #time.sleep(1000)
@@ -101,7 +101,7 @@ class importDatasetScreen(QDialog):
         self.thread2 = Thread(string=(self.string))
         self.thread2.update_signal1.connect(self.downloaded)
         self.thread2.update_signal3.connect(self.setMaximum)
-        self.thread2.closeSignal.connect(self.close)
+        self.thread2.closeSignal.connect(self.closeSignal)
 
     def onButtonClick(self):
         self.button2.setEnabled(True)
@@ -155,3 +155,6 @@ class importDatasetScreen(QDialog):
         time = min + sec
         self.progress.setMaximum(time)
         self.progress.setValue(0)
+    
+    def closeSignal(self):
+        self.close()
