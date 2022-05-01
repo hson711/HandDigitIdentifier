@@ -45,7 +45,9 @@ class DNNFunctions():
 
     labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
-
+    model = NULL
+    loaded_model = NULL
+    
     def __init__(self):
         return
 
@@ -142,6 +144,13 @@ class DNNFunctions():
         DNNFunctions.model._name = modelName
         DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
         DNNFunctions.model.fit(train_x, train_y, epochs=chosenEpochs, batch_size=batchSize)
+
+    def model_load(model_path):
+        try:
+            DNNFunctions.loaded_model = load_model(model_path)
+            return True
+        except IOError as ioe:
+            return False
 
 
 #import numpy as np

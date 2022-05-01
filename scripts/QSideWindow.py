@@ -151,6 +151,9 @@ class Ui_trainWindow(object):
         self.label_8.setText(_translate("trainWindow", "0"))
         self.label_9.setText(_translate("trainWindow", "Split the training dataset for validation (%)"))
         self.label_10.setText(_translate("trainWindow", "0%"))
+        
+        for k in DNNFunctions.keys:
+            print (k)
 
     def updateSliderVal(self, value):
         self.label_10.setText(QtCore.QCoreApplication.translate("trainWindow", str(value)+"%"))
@@ -173,58 +176,22 @@ class Ui_trainWindow(object):
     
     
     def save_model_popup(self):
-        msg = QMessageBox()
-        question = msg.question(self,'',"Do you want to save this model?",msg.Yes | msg.No)
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText("Would you like to save your model?")
+        msgBox.setWindowTitle("QMessageBox Example")
+        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
-        if question==msg.Yes:
-            file = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-            DNNFunctions.model.save(file+"/"+DNNFunctions.model.name+".h")
+        returnValue = msgBox.exec()
+        if returnValue == QMessageBox.Yes:
+            file_path = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
+            print(file_path)
+            DNNFunctions.model.save(file_path+"/"+DNNFunctions.model.name)
+            self.model_saved_success()
 
     def model_saved_success():
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.information)
         msg.setText("Save Successful")
         msg.setInformativeText('Your model has been saved successfully ')
         msg.setWindowTitle("Save Successful")
         msg.exec_()
-
-
-class sideWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle('Train Model:')
-
-        self.spinBox1 = QSpinBox()
-        
-        # self.spinBox2 = QSpinBox()
-
-        # self.combobox1 = QComboBox()
-        # self.combobox1.addItems(['Adam', 'SFG'])
-
-        # mainLayout = QVBoxLayout()
-        # mainLayout.addWidget(self.combobox1, 0, 0)
-        # self.setLayout(mainLayout)
-
-        #uic('test.ui',self)
-
-        #SpinBox
-        epochSelection = 2
-
-        #Spinbox
-        batchSizeSelection = 100
-
-        #Combobox (possible options: adam,sfg,nadam etc.)
-        chosenOptimiser = 'adam'
-
-        self.process.start('python',['-u','QSideWindow.py'])
-        DNNFunctions.train(epochSelection,batchSizeSelection,chosenOptimiser)
-
-        
-        
-        # results = DNNFunctions.model.evaluate(DNNFunctions.raw_test_x, DNNFunctions.raw_test_y, batch_size=128)
-        # output = "test loss: {}, test acc: {}".format(results[0], results[1]) 
-        # self.label = QLabel(output)
-
-
-
-

@@ -12,13 +12,13 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from QSideWindow import sideWindow, Ui_trainWindow
+from QSideWindow import Ui_trainWindow
 from customPredicionHub import customPredicionHub
 from dropDownDatasets import dropDownDatasets, dropDownPhotoViewer
 from DNNFunctions import DNNFunctions
 from importDatasetScreen import importDatasetScreen
 from PyQt5.QtWidgets import QMessageBox
-
+from loadModel import *
 
 
 class Window(QMainWindow):
@@ -60,8 +60,11 @@ class Window(QMainWindow):
 
     
     def openCustomPainter(self, checked):
-        self.customPredictionHub = customPredicionHub()
-        self.customPredictionHub.show()
+        self.loadModel = QWidget()
+        loadModelUi = Ui_loadModelUI()
+        loadModelUi.setupUi(self.loadModel)
+        self.loadModel.show()
+        
 
     def importDataset(self):
         if DNNFunctions.keys != NULL:
@@ -81,7 +84,10 @@ class Window(QMainWindow):
         else:
             self.viewDataset = dropDownPhotoViewer()
             self.viewDataset.show()
-        
+    
+    def customPredHub(self):
+        self.customPredictionHub = customPredicionHub()
+        self.customPredictionHub.show()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
