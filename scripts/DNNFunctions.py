@@ -27,23 +27,27 @@ from PIL.ImageQt import ImageQt
 from torchvision.transforms import ToPILImage
 from scipy import *
 
-
+#Class that hold all global variables and functions related to the downloading of data
 class DNNFunctions():
+    #Initialises that the data isnt loaded
     data_loaded = False    
     #Class Variable
     (raw_train_x, raw_train_y), (raw_test_x, raw_test_y) = (NULL, NULL), (NULL, NULL)
     (train_x, train_y), (test_x, test_y) = (NULL, NULL), (NULL, NULL)
 
+    #Sets up the path to the downloaded file if its downloaded
     w = NULL
     user_home = str(pathlib.Path.home())
     location = user_home + "\.keras\datasets"
     file = 'emnist_matlab.npz'
-    pathFile = os.path.join(location, file)
+    pathFile = os.path.join(location, file)\
+    #Initializes keys
     keys = {'matlab/emnist-balanced.mat', 'matlab/emnist-byclass.mat', 'matlab/emnist-bymerge.mat', 'matlab/emnist-digits.mat', 'matlab/emnist-letters.mat', 'matlab/emnist-mnist.mat'}
+    #If file is downloaded loads keys
     if os.path.isfile(pathFile) == True:
             numpyObject = numpy.load(pathFile)
             keys = numpyObject.keys()
-
+    #Preset labels
     labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
     model = NULL
@@ -52,34 +56,39 @@ class DNNFunctions():
     def __init__(self):
         return
 
-        
+    #Rotates Image
+    ##NOT CURRENTLY USED
     def rotate(image):
         image = np.fliplr(image)
         image = np.rot90(image)
         return image
     
+    #Function that is passed a string of what class of data set to use and downloads the dataset and activates the target class of data
     def loadEMNIST(string):
+        #If file is not downloaded, download and load the by class data
         if os.path.isfile(DNNFunctions.pathFile) == False:
             (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = emnist.load_data(type='byclass')
+        #if downloaded, open the downloaded data
         else:
             DNNFunctions.openPreDownloadedDataset(string)
-
+        #Set downloaded data to true
         DNNFunctions.data_loaded = True
     
+    #Function that deletes the dataset if it exsists on the system
     def clearCache():
         if os.path.isfile(DNNFunctions.pathFile) == True:
             os.remove(DNNFunctions.pathFile)
 
+    #Function opens the predownloaded datafile and loads the class of data desired, specified by the passed string
     def openPreDownloadedDataset(string):
+        #Loads the keys of the data
         numpyObject = numpy.load(DNNFunctions.pathFile)
         DNNFunctions.keys = numpyObject.keys()
         DNNFunctions.data_loaded = True
-        #arrayData = numpyObject[string]
-        #mat = scipy.io.loadmat(string)
-        #print(mat[0])
+        #Opens zipfile
         with zipfile.ZipFile(DNNFunctions.pathFile, 'r') as opened_zip:
             with opened_zip.open(string, mode = 'r') as dataSetFile:
-
+                #NEED EXPLANATION
                 mat = sio.loadmat(dataSetFile)
                 data = mat["dataset"]
 
@@ -95,10 +104,12 @@ class DNNFunctions():
                     (input_test.shape[0], 28, 28), order="F"
                 )
                 (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = (input_train, target_train), (input_test, target_test)
+        #depending on the chosen class calls the setLabel function
         DNNFunctions.setLabel(string)
         
-
+    #Given a string of the chosen class of data
     def setLabel(string):
+        #Depending on chosen class of data sets the labels of the activated dataset to the respect labels
         if string =='matlab/emnist-balanced.mat':
             DNNFunctions.labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt'
         elif string == 'matlab/emnist-bymerge.mat':
@@ -122,7 +133,8 @@ class DNNFunctions():
         bytesPerLine = 3 * w
         qimage = QImage(frame.data, w, h, bytesPerLine, QImage.Format.Format_RGB888)
         return qimage
-
+    
+    #Function converts numpy array to image and is passed a numpy array from the dataset
     def convertNumpyArrayToImage(np1):
         img = ToPILImage()(np1)
         qim = ImageQt(img)
