@@ -35,6 +35,7 @@ class Thread(QThread):
                     self.realtime_output = self.p.stdout.readline()
                     if self.p.poll() is not None:
                         DNNFunctions.openPreDownloadedDataset(self.string)
+                        self.running = False
                         self.closeSignal.emit()
                         break
 
@@ -44,6 +45,7 @@ class Thread(QThread):
             else:
                 DNNFunctions.openPreDownloadedDataset(self.string)
                 self.closeSignal.emit()
+                self.running = False
             
             #stdout, stderr = p.communicate()
             #time.sleep(1000)

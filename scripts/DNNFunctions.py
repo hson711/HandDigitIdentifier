@@ -25,7 +25,7 @@ import cv2
 import numpy, scipy.io, zipfile
 from PIL.ImageQt import ImageQt
 from torchvision.transforms import ToPILImage
-
+from scipy import *
 
 
 class DNNFunctions():
@@ -95,11 +95,21 @@ class DNNFunctions():
                 )
                 (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = (input_train, target_train), (input_test, target_test)
                 #print(DNNFunctions.raw_train_x*255)
-                """
-                print(DNNFunctions.raw_train_y.shape)
+                labelArray = []
+                for features_labels in DNNFunctions.raw_train_y:
+                    labelArray.append(features_labels)
+                labelArray = list(set(labelArray))
+                print(labelArray)
+                """ arrayBin = DNNFunctions.raw_train_y
+                maxLabel = np.amax(arrayBin)
+                minLabel = np.amin(arrayBin)
+                print(minLabel)
+                print(maxLabel)
                 print(DNNFunctions.raw_test_x.shape)
-                print(DNNFunctions.raw_test_y.shape)
-                """
+                print(DNNFunctions.raw_test_y.shape)"""
+
+               
+
                 
 
 
@@ -178,6 +188,7 @@ class DNNFunctions():
         return(DNNFunctions.labels[resultLabels[0]])
         
         
+
 
 
 #import numpy as np
