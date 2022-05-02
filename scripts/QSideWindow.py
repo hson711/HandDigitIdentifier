@@ -131,7 +131,7 @@ class Ui_trainWindow(object):
         self.horizontalSlider.valueChanged[int].connect(self.updateSliderVal)
 
         #Training the Model
-        self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value(), self.modelName.text()))
+        self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value(), self.modelName.text(), (self.horizontalSlider.value()/100)))
     
 
     def retranslateUi(self, trainWindow):
@@ -159,7 +159,7 @@ class Ui_trainWindow(object):
         self.label_10.setText(QtCore.QCoreApplication.translate("trainWindow", str(value)+"%"))
 
 
-    def train_model(checked,chosenOptimiser, chosenEpoch, batchSize, modelName):
+    def train_model(checked,chosenOptimiser, chosenEpoch, batchSize, modelName, validation_ratio):
 
         #Note, the argument checked is used due to the functionality of qt5 buttons outputting with object call argument which can be considered as not requried for this function
         print("here")
@@ -169,7 +169,7 @@ class Ui_trainWindow(object):
         #Can maybe add warning for high epoch
         
 
-        DNNFunctions.train(chosenOptimiser, chosenEpoch, batchSize, modelName)
+        DNNFunctions.train(chosenOptimiser, chosenEpoch, batchSize, modelName, validation_ratio)
         print("Training done") #For testing purposes
 
         Ui_trainWindow.save_model_popup(Ui_trainWindow)

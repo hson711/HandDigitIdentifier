@@ -4,7 +4,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from customPredicionHub import *
 from DNNFunctions import DNNFunctions
 from QMainWindow import Window
-
 class Ui_loadModelUI(object):
     def setupUi(self, loadModelUI):
         loadModelUI.setObjectName("loadModelUI")
@@ -30,7 +29,7 @@ class Ui_loadModelUI(object):
         self.retranslateUi(loadModelUI)
         QtCore.QMetaObject.connectSlotsByName(loadModelUI)
 
-        self.pushButton.clicked.connect(Ui_loadModelUI.file_choose)
+        self.pushButton.clicked.connect(lambda: Ui_loadModelUI.file_choose(loadModelUI))
 
     def retranslateUi(self, loadModelUI):
         _translate = QtCore.QCoreApplication.translate
@@ -39,12 +38,13 @@ class Ui_loadModelUI(object):
         self.pushButton.setText(_translate("loadModelUI", "Choose Model"))
         self.label_2.setText(_translate("loadModelUI", "Please click to load model"))
 
-    def file_choose(self):
+    def file_choose(loadModelUI):
         model_path = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
         print(model_path)
         if model_path != "":
             if (DNNFunctions.model_load(model_path) == True):
-                print(DNNFunctions.loaded_model.name)
+                print(DNNFunctions.loaded_model.name)                
+                loadModelUI.close()
                 Window.customPredHub(Window)
             else:
                 msg = QMessageBox()

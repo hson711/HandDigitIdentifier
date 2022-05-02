@@ -2,6 +2,7 @@ from customPainter import customPainter, ToolbarWindow
 import sys
 from PyQt5.QtWidgets import *
 from DNNFunctions import DNNFunctions
+from painter import Ui_Dialog
 
 class customPredicionHub(QDialog):
 
@@ -20,17 +21,16 @@ class customPredicionHub(QDialog):
         hbox.addWidget(button1)
         hbox.addWidget(button2)
         self.setLayout(hbox)
-        self.file_load()
     
     def on_click1(self):
         fileNames = QFileDialog.getOpenFileNames(self,("Open Image"), "", ("Image Files (*.png *.jpg *.bmp)"))
         print(fileNames[0])
 
     def on_click2(self):
+        # self.paint = QDialog()
+        # painterUI = Ui_Dialog()
+        # painterUI.setupUi(self.paintWindow)
+        # self.loadModel.show()
+
         self.customPainterWindow = ToolbarWindow()
         self.customPainterWindow.show()
-
-    def file_load(self):
-        model_path = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
-        DNNFunctions.model_load(model_path)
-        print(DNNFunctions.loaded_model.name)

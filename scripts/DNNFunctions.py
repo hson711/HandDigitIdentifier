@@ -6,7 +6,7 @@ from typing_extensions import Self
 import keras
 from keras.models import load_model
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Conv2D, Dropout, Flatten, BatchNormalization
 import matplotlib.pyplot as plt
 import numpy as np
 import struct
@@ -124,7 +124,7 @@ class DNNFunctions():
         pix = QPixmap.fromImage(image)
         return pix
 
-    def train(chosenOptimiser, chosenEpochs, batchSize, modelName):
+    def train(chosenOptimiser, chosenEpochs, batchSize, modelName, validation_ratio):
         train_x = DNNFunctions.raw_train_x.reshape(len(DNNFunctions.raw_train_x), 784)
         test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
 
@@ -136,14 +136,23 @@ class DNNFunctions():
         train_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_train_y)
         test_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_test_y)
 
-        DNNFunctions.model = keras.models.Sequential()
-        DNNFunctions.model.add(Dense(16,input_dim = 784, activation='relu'))
-        DNNFunctions.model.add(Dense(32,activation='relu'))
-        DNNFunctions.model.add(Dense(20,activation='relu'))
-        DNNFunctions.model.add(Dense(62,activation='softmax'))
+        train_x = train_x.reshape(-1, 28, 28, 1)
+        test_x = test_x.reshape(-1, 28, 28, 1)
+
+        DNNFunctions.model = Sequential()
+        DNNFunctions.model.add(Conv2D(32, kernel_size=(3, 3), strides=1,activation='relu', input_shape = (28, 28, 1)))
+        DNNFunctions.model.add(BatchNormalization())
+        DNNFunctions.model.add(Conv2D(32, (3, 3), activation='relu', strides=1))
+        DNNFunctions.model.add(BatchNormalization())
+        DNNFunctions.model.add(Dropout(0.4))
+        DNNFunctions.model.add(Flatten())
+        DNNFunctions.model.add(Dropout(0.4))
+        DNNFunctions.model.add(Dense(128, activation='relu'))
+        DNNFunctions.model.add(Dense(62, activation='softmax'))
+
         DNNFunctions.model._name = modelName
         DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
-        DNNFunctions.model.fit(train_x, train_y, epochs=chosenEpochs, batch_size=batchSize)
+        DNNFunctions.model.fit(train_x, train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio)
 
     def model_load(model_path):
         try:
@@ -151,6 +160,24 @@ class DNNFunctions():
             return True
         except IOError as ioe:
             return False
+    
+    def predict(img_path):
+        DNNFunctions.model = DNNFunctions.loaded_model
+        image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE )
+        print(image.shape)
+
+        resized_img = cv2.resize(image, (28, 28))
+        resized_img = resized_img/255
+        resized_img = np.expand_dims(resized_img, axis=2)
+        resized_img = resized_img.reshape(-1,28,28,1)
+
+        results = np.round(DNNFunctions.model.predict(resized_img, verbose=1), decimals=2)
+        resultLabels = np.argmax(results, axis = 1)
+        print(resultLabels)
+        print('Pred: {}'.format(DNNFunctions.labels[resultLabels[0]]))
+        return(DNNFunctions.labels[resultLabels[0]])
+        
+        
 
 
 #import numpy as np
