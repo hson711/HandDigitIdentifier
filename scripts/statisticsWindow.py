@@ -17,10 +17,13 @@ class statisticsWindow(QWidget):
 
         for i in range(len(DNNFunctions.labels)):
             self.temp = DNNFunctions.labels[i]
-            self.count = array[i]
-            text = ("Total occurances of ", str(self.temp), " in dataset is ", str(self.count), ".\n" )
-            text = ("").join(text)
-            self.tb.append(text)
+            try:
+                self.count = array[i]
+                text = ("Total occurances of ", str(self.temp), " in dataset is ", str(self.count), ".\n" )
+                text = ("").join(text)
+                self.tb.append(text)
+            except:
+                self.count = 0
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.tb)
