@@ -20,17 +20,20 @@ from importDatasetScreen import importDatasetScreen
 from PyQt5.QtWidgets import QMessageBox
 from loadModel import *
 
-
+#Class that creates the main menu window
 class Window(QMainWindow):
-    """Main Window."""
+
+    #Main Window Initializer Function
     def __init__(self, parent=None):
-        """Initializer."""
         super().__init__(parent)
         self.setWindowTitle('Handwritten Digit/English Recognizer')
         self.setGeometry(300, 300, 400, 300)
         self._createMenu()
-        
-    def openSideWindow(self, checked):
+    
+    #Input: Main Window Instance
+    #Output:Dataset Training Window
+    #Function called upon by main window toolbar to access a new window to train installed dataset
+    def openSideWindow(self):
         if (DNNFunctions.data_loaded != True):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
@@ -44,22 +47,32 @@ class Window(QMainWindow):
             trainUi.setupUi(self.trainWindow)
             self.trainWindow.show()
 
+    #Input: Main Window Instance
+    #Output: Main Window Toolbar and connections
+    #Function called upon by main window instance to set the toolbar and initialize its connections to functions
     def _createMenu(self):
         self.menu = self.menuBar().addMenu("&File")
+
         datasetAction = self.menu.addAction('&Import Dataset')
         datasetAction.triggered.connect(self.importDataset)
+
         datasetAction = self.menu.addAction('&Train Model')
         datasetAction.triggered.connect(self.openSideWindow)
+
         self.menu.addAction('&Quit', self.close)
         self.menu = self.menuBar().addMenu("&View")
+
         datasetAction = self.menu.addAction('&Custom Prediction')
         datasetAction.triggered.connect(self.openCustomPainter)
+
         self.menu = self.menu.addAction('&View Dataset')
         self.menu.triggered.connect(self.viewDatasetPhotos)
 
 
-    
-    def openCustomPainter(self, checked):
+    #Input: Main Window Instance
+    #Output: Custom Painter Menu Window
+    #Function called upon to create a new window to predict custom dataset
+    def openCustomPainter(self):
         self.loadModel = QWidget()
         loadModelUi = Ui_loadModelUI()
         loadModelUi.setupUi(self.loadModel)
