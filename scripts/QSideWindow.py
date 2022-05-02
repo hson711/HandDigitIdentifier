@@ -3,11 +3,25 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pathlib
+import sys
+from xmlrpc.client import Boolean
+from PyQt5.QtWidgets import (QApplication, QDialog, QProgressBar, QPushButton, QVBoxLayout, QHBoxLayout)
+from PyQt5.QtCore import QThread, pyqtSignal
+from numpy import NaN, integer
+from DNNFunctions import *
+import contextlib
+import io
+import threading
+import gevent
+import subprocess
+from subprocess import *
+from PyQt5.QtWidgets import (QApplication, QWidget, QLineEdit, QTextBrowser, QPushButton, QVBoxLayout)
 
 from DNNFunctions import DNNFunctions
 
 
 #Created using QTdesigner from the trainWindow.ui
+
 
 
 class Ui_trainWindow(object):
@@ -162,15 +176,11 @@ class Ui_trainWindow(object):
     def train_model(checked,chosenOptimiser, chosenEpoch, batchSize, modelName, validation_ratio):
 
         #Note, the argument checked is used due to the functionality of qt5 buttons outputting with object call argument which can be considered as not requried for this function
-        print("here")
         print(chosenOptimiser)
         print(chosenEpoch)
-        print(batchSize)
-        #Can maybe add warning for high epoch
-        
+        print(batchSize)        
 
         DNNFunctions.train(chosenOptimiser, chosenEpoch, batchSize, modelName, validation_ratio)
-        print("Training done") #For testing purposes
 
         Ui_trainWindow.save_model_popup(Ui_trainWindow)
     
