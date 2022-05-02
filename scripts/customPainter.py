@@ -15,42 +15,56 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-
 from DNNFunctions import DNNFunctions
 
+#Custom Painter Class allows the user to draw a custom picture which can be used by the Neural Network for predictions
 class customPainter(QtWidgets.QLabel):
     predicion = ''
 
+    #Initializes Instance of the class
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
+        #Initializes a Pixmap and Points
         self.points = QtGui.QPolygon()
+
         pixmap = QtGui.QPixmap(280,280)
         self.setPixmap(pixmap)
+
         self.setWindowTitle('Custom Painter')
+
         pal = self.palette()
         pal.setColor(QPalette.Background, Qt.black)
+
         self.setAutoFillBackground(True)
         self.setPalette(pal)
         self.show()
     
+    #Function that begins a painting event and calls the draw points function
     def paintEvent(self, e):
         qp = QtGui.QPainter()
+
         qp.begin(self)
         self.draw_point(qp)
         qp.end()
 
-
+    #Function that is given the painter instance and proceeds to draw points at the instances points which are continously updated in real time
+    #Also sets pen color to white to replicate dataset imagery
     def draw_point(self, qp):
         qp.setPen(QPen(Qt.white,  20))
         qp.drawPoints(self.points)
 
+    #function that changes the instances points to the position of the mouse and takes mouse event as input
     def mouseMoveEvent(self, e):
+        #Sets points to be drawn to mouses position when mouse is clicked
         self.points << e.pos()
+        #Updates painter to show the new drawn points
         self.update()
 
+    #Function to take a screenshot of the drawn picture and save it in the folder as screenshot.jpg
+    #Then proceeds to call the predict function on the screenshot
     def submitPicture(self):
         screen = QApplication.primaryScreen()
         screenshot = screen.grabWindow(self.winId() )
@@ -58,22 +72,27 @@ class customPainter(QtWidgets.QLabel):
         ToolbarWindow.label
         ToolbarWindow.label.setText('Prediction: {}'.format(DNNFunctions.predict('../bin/screenshot.jpg')))
 
-
+#ToolbarWindow class exsists to be the parent layout to the painter class so that the painter class has a usable toolbar attached
 class ToolbarWindow(QDialog):
+    #Initializes instance of ToolbarWindow
     def __init__(self):
         super().__init__()
+
         self.setWindowTitle('Digit Painter')
-        
         self.label = QLabel('Prediction: ', self)
 
         layout = QHBoxLayout(self)
+
         self.setGeometry(300, 300, 300, 300)
         self.widget = customPainter()
 
+        #Creates a toolbar and toolbar action and connects it to the submit function
         toolbar = QMenuBar()
-        paintClearAction = QAction("Submit Picture", toolbar)
-        toolbar.addAction(paintClearAction)
-        paintClearAction.triggered.connect(self.submitCustomPicture)
+        submitPicture = QAction("Submit Picture", toolbar)
+        toolbar.addAction(submitPicture)
+        submitPicture.triggered.connect(self.submitCustomPicture)
+
+        #Sets up layout of the toolbar
         layout.setMenuBar(toolbar)
         layout.addWidget(self.widget)
         layout.addWidget(self.label)
