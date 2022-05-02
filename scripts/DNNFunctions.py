@@ -32,6 +32,7 @@ class DNNFunctions():
     data_loaded = False    
     #Class Variable
     (raw_train_x, raw_train_y), (raw_test_x, raw_test_y) = (NULL, NULL), (NULL, NULL)
+    (train_x, train_y), (test_x, test_y) = (NULL, NULL), (NULL, NULL)
 
     w = NULL
     user_home = str(pathlib.Path.home())
@@ -135,19 +136,19 @@ class DNNFunctions():
         return pix
 
     def train(chosenOptimiser, chosenEpochs, batchSize, modelName, validation_ratio):
-        train_x = DNNFunctions.raw_train_x.reshape(len(DNNFunctions.raw_train_x), 784)
-        test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
+        DNNFunctions.train_x = DNNFunctions.raw_train_x.reshape(len(DNNFunctions.raw_train_x), 784)
+        DNNFunctions.test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
 
-        train_x = train_x.astype('float32')
-        test_x = test_x.astype('float32')
-        train_x = train_x/255
-        test_x = test_x/255
+        DNNFunctions.train_x = DNNFunctions.train_x.astype('float32')
+        DNNFunctions.test_x = DNNFunctions.test_x.astype('float32')
+        DNNFunctions.train_x = DNNFunctions.train_x/255
+        DNNFunctions.test_x = DNNFunctions.test_x/255
 
-        train_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_train_y)
-        test_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_test_y)
+        DNNFunctions.train_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_train_y)
+        DNNFunctions.test_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_test_y)
 
-        train_x = train_x.reshape(-1, 28, 28, 1)
-        test_x = test_x.reshape(-1, 28, 28, 1)
+        DNNFunctions.train_x = DNNFunctions.train_x.reshape(-1, 28, 28, 1)
+        DNNFunctions.test_x = DNNFunctions.test_x.reshape(-1, 28, 28, 1)
 
         DNNFunctions.model = Sequential()
         DNNFunctions.model.add(Conv2D(32, kernel_size=(3, 3), strides=1,activation='relu', input_shape = (28, 28, 1)))
@@ -162,7 +163,7 @@ class DNNFunctions():
 
         DNNFunctions.model._name = modelName
         DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
-        DNNFunctions.model.fit(train_x, train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio)
+        DNNFunctions.model.fit(DNNFunctions.train_x, DNNFunctions.train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio)
 
     def model_load(model_path):
         try:

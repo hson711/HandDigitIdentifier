@@ -55,7 +55,7 @@ class customPainter(QtWidgets.QLabel):
         screen = QApplication.primaryScreen()
         screenshot = screen.grabWindow(self.winId() )
         screenshot.save('../bin/screenshot.jpg', 'jpg')
-        ToolbarWindow
+        ToolbarWindow.label
         ToolbarWindow.label.setText('Prediction: {}'.format(DNNFunctions.predict('../bin/screenshot.jpg')))
 
 
