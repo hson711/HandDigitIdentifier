@@ -113,6 +113,7 @@ class Window(QMainWindow):
     #Input: Main Window Instance
     #Output: Custom Prediction Hub Instance
     #Function that when called opens the custom prediction hub window
+    ## CURRENTLY UNUSED ##
     def customPredHub(self):
         self.customPredictionHub = customPredicionHub()
         self.customPredictionHub.show()
