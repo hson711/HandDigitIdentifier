@@ -95,26 +95,25 @@ class DNNFunctions():
                     (input_test.shape[0], 28, 28), order="F"
                 )
                 (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = (input_train, target_train), (input_test, target_test)
-                #print(DNNFunctions.raw_train_x*255)
-                labelArray = []
-                for features_labels in DNNFunctions.raw_train_y:
-                    labelArray.append(features_labels)
-                labelArray = list(set(labelArray))
-                print(labelArray)
-                """ arrayBin = DNNFunctions.raw_train_y
-                maxLabel = np.amax(arrayBin)
-                minLabel = np.amin(arrayBin)
-                print(minLabel)
-                print(maxLabel)
-                print(DNNFunctions.raw_test_x.shape)
-                print(DNNFunctions.raw_test_y.shape)"""
+        DNNFunctions.setLabel(string)
+        
 
-               
+    def setLabel(string):
+        if string =='matlab/emnist-balanced.mat':
+            DNNFunctions.labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt'
+        elif string == 'matlab/emnist-bymerge.mat':
+            DNNFunctions.labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt'
+        elif string == 'matlab/emnist-digits.mat':
+            DNNFunctions.labels = '0123456789'
+        elif string ==  'matlab/emnist-letters.mat':
+            DNNFunctions.labels = 'AABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+        elif string ==  'matlab/emnist-mnist.mat':
+            DNNFunctions.labels = '0123456789'
 
                 
 
 
-    def convertCvImage2QtImage(cv_img):
+    def convertCvImage2QtImage(cv_img): #function not used presently
         if len(cv_img.shape)<3:
             frame = cv2.cvtColor(cv_img, cv2.COLOR_GRAY2RGB)
         else:
@@ -130,7 +129,7 @@ class DNNFunctions():
         pix = QPixmap.fromImage(qim)
         return pix
 
-    def convertPILImageToPixmap(pilImage):
+    def convertPILImageToPixmap(pilImage): #function not used presently
         image = QImage(pilImage, pilImage.size[0], pilImage.size[1], QImage.Format_ARGB32)
         pix = QPixmap.fromImage(image)
         return pix

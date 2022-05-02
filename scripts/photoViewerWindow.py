@@ -21,6 +21,7 @@ class photoViewerWindow(QMainWindow):
         self.initUI(set)
 
     def initUI(self,set):
+        self.filterText = None
         self.scroll = QScrollArea()
         self.widget = QWidget() 
         self.layout = QGridLayout()
@@ -73,25 +74,8 @@ class photoViewerWindow(QMainWindow):
 
     def showPhoto(self, lengthx, datax):
         temp = self.z
-        while self.z <= temp + 1000:
-            pm1 = DNNFunctions.convertNumpyArrayToImage(datax[self.z])
-            if not pm1.isNull():
-                imageLabel = QLabel(self)
-                imageLabel.setPixmap(pm1)
-                if self.j == 32:
-                    self.j = 0
-                    self.i = self.i + 1
-                self.layout.setColumnStretch(self.j,1)
-                self.layout.setRowStretch(self.i,1)
-                self.layout.addWidget(imageLabel,self.i,self.j)
-                self.j = self.j + 1
-                self.z = self.z + 1
-
-    def showMoreFilteredPhotos(self,datax,filter):
-        temp = self.z
-        while self.z <= temp + 10000:
-            string = (DNNFunctions.labels[self.datay[self.z]])
-            if (filter.upper() == string.upper()):
+        try:
+            while self.z <= temp + 1000:
                 pm1 = DNNFunctions.convertNumpyArrayToImage(datax[self.z])
                 if not pm1.isNull():
                     imageLabel = QLabel(self)
@@ -103,38 +87,67 @@ class photoViewerWindow(QMainWindow):
                     self.layout.setRowStretch(self.i,1)
                     self.layout.addWidget(imageLabel,self.i,self.j)
                     self.j = self.j + 1
-            self.z = self.z + 1
+                    self.z = self.z + 1
+        except:
+            pass
+
+    def showMoreFilteredPhotos(self,datax,filter):
+        temp = self.z
+        try:
+            while self.z <= temp + 1000:
+                string = (DNNFunctions.labels[self.datay[self.z]])
+                if (filter.upper() == string.upper()):
+                    pm1 = DNNFunctions.convertNumpyArrayToImage(datax[self.z])
+                    if not pm1.isNull():
+                        imageLabel = QLabel(self)
+                        imageLabel.setPixmap(pm1)
+                        if self.j == 32:
+                            self.j = 0
+                            self.i = self.i + 1
+                        self.layout.setColumnStretch(self.j,1)
+                        self.layout.setRowStretch(self.i,1)
+                        self.layout.addWidget(imageLabel,self.i,self.j)
+                        self.j = self.j + 1
+                self.z = self.z + 1
+        except:
+            pass
     
     def showPhotoExsisting(self, lengthx, datax):
         datax = DNNFunctions.raw_train_x
         temp = self.z
-        while self.z <= temp + 32:
-            pm1 = DNNFunctions.convertNumpyArrayToImage(datax[self.z])
-            if not pm1.isNull():
-                imageLabel = QLabel(self)
-                imageLabel.setPixmap(pm1)
-                if self.j == 32:
-                    self.j = 0
-                    self.i = self.i + 1
-                self.layout.setColumnStretch(self.j,1)
-                self.layout.setRowStretch(self.i,1)
-                self.layout.addWidget(imageLabel,self.i,self.j)
-                self.j = self.j + 1
-                self.z = self.z + 1
+        try:
+            while self.z <= temp + 32:
+                pm1 = DNNFunctions.convertNumpyArrayToImage(datax[self.z])
+                if not pm1.isNull():
+                    imageLabel = QLabel(self)
+                    imageLabel.setPixmap(pm1)
+                    if self.j == 32:
+                        self.j = 0
+                        self.i = self.i + 1
+                    self.layout.setColumnStretch(self.j,1)
+                    self.layout.setRowStretch(self.i,1)
+                    self.layout.addWidget(imageLabel,self.i,self.j)
+                    self.j = self.j + 1
+                    self.z = self.z + 1
+        except:
+            pass
     
     def showPhotoSpecific(self, photoID):
-        pm1 = DNNFunctions.convertNumpyArrayToImage(self.datax[photoID])
-        if not pm1.isNull():
-                imageLabel = QLabel(self)
-                imageLabel.setPixmap(pm1)
-                if self.j == 32:
-                    self.j = 0
-                    self.i = self.i + 1
-                self.layout.setColumnStretch(self.j,1)
-                self.layout.setRowStretch(self.i,1)
-                self.layout.addWidget(imageLabel,self.i,self.j)
-                self.j = self.j + 1
-                self.z = self.z + 1    
+        try:
+            pm1 = DNNFunctions.convertNumpyArrayToImage(self.datax[photoID])
+            if not pm1.isNull():
+                    imageLabel = QLabel(self)
+                    imageLabel.setPixmap(pm1)
+                    if self.j == 32:
+                        self.j = 0
+                        self.i = self.i + 1
+                    self.layout.setColumnStretch(self.j,1)
+                    self.layout.setRowStretch(self.i,1)
+                    self.layout.addWidget(imageLabel,self.i,self.j)
+                    self.j = self.j + 1
+                    self.z = self.z + 1
+        except:
+            pass
     
     def loadData(self):
         if (self.set == 'Train Set'):
@@ -164,10 +177,12 @@ class photoViewerWindow(QMainWindow):
             return
         else:
             self.filterText = filterText
-        for k in range(100000):
+        k = 0
+        while self.layout.count() <= 700:
             string = (DNNFunctions.labels[self.datay[k]])
             if (filterText.upper() == string.upper()):
                 self.showPhotoSpecific(k)
+            k = k+1
                             
     def clearLayout(self):
         for i in reversed(range(self.layout.count())): 
