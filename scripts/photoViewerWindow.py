@@ -82,6 +82,7 @@ class photoViewerWindow(QMainWindow):
         maxValue = round(tempValue * 1)
         minValue = round(tempValue * 0.95)
 
+        #If no filter then shows any photo otherwise only shows more filtered photos
         if value >= minValue and value <= maxValue :
             if self.filterText == None:
                 self.showPhotoExsisting(self.lengthx, self.datax)
@@ -122,11 +123,13 @@ class photoViewerWindow(QMainWindow):
     #Function is called after filter button is pressed and is passed both the data to view and the filter text to use
     def showMoreFilteredPhotos(self,datax,filter):
         #Temp placeholder of z to only filter through the next 1000 photos, from starting pos
-        temp = self.z
+        ##temp = self.z
+        temp = self.layout.count()
         #Try clause to catch running out of photos so index doesnt go out of bounds
         try:
             ###IMPROVEMENT: Could be to filter photos until the size of the widget is filled up
-            while self.z <= temp + 1000:
+            ##while self.z <= temp + 1000:
+            while self.layout.count() <= temp + 64:
 
                 #Sets a string variable to be the current photo we are reviewings label
                 string = (DNNFunctions.labels[self.datay[self.z]])
