@@ -21,7 +21,7 @@
 
 3.  Run QMainWindow.py within the scripts folder
 
-    >Running the project will create a main window gui with all the subsequent options help in the menu
+    >Running the project will create a main window GUI with all the subsequent options in the toolbar
 
 4. Go File > Import Dataset > Choose the class of dataset you would like to use > Then click start importing
 
