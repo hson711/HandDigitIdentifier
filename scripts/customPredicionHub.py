@@ -1,6 +1,9 @@
 from customPainter import customPainter, ToolbarWindow
 import sys
 from PyQt5.QtWidgets import *
+from DNNFunctions import DNNFunctions
+from painter import Ui_Dialog
+
 class customPredicionHub(QDialog):
 
     def __init__(self):
@@ -24,5 +27,10 @@ class customPredicionHub(QDialog):
         print(fileNames[0])
 
     def on_click2(self):
+        # self.paint = QDialog()
+        # painterUI = Ui_Dialog()
+        # painterUI.setupUi(self.paintWindow)
+        # self.loadModel.show()
+
         self.customPainterWindow = ToolbarWindow()
         self.customPainterWindow.show()

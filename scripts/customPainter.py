@@ -15,14 +15,19 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+
+from DNNFunctions import DNNFunctions
+
 class customPainter(QtWidgets.QLabel):
+    predicion = ''
+
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
         self.points = QtGui.QPolygon()
-        pixmap = QtGui.QPixmap(600,300)
+        pixmap = QtGui.QPixmap(280,280)
         self.setPixmap(pixmap)
         self.setWindowTitle('Custom Painter')
         pal = self.palette()
@@ -49,17 +54,20 @@ class customPainter(QtWidgets.QLabel):
     def submitPicture(self):
         screen = QApplication.primaryScreen()
         screenshot = screen.grabWindow(self.winId() )
-        screenshot.save('../bin/screenshot.png', 'png')
+        screenshot.save('../bin/screenshot.jpg', 'jpg')
+        ToolbarWindow
+        ToolbarWindow.label.setText('Prediction: {}'.format(DNNFunctions.predict('../bin/screenshot.jpg')))
 
 
 class ToolbarWindow(QDialog):
-
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Digit Painter')
+        
+        self.label = QLabel('Prediction: ', self)
 
         layout = QHBoxLayout(self)
-        self.setGeometry(300, 300, 400, 300)
+        self.setGeometry(300, 300, 300, 300)
         self.widget = customPainter()
 
         toolbar = QMenuBar()
@@ -68,7 +76,4 @@ class ToolbarWindow(QDialog):
         paintClearAction.triggered.connect(self.submitCustomPicture)
         layout.setMenuBar(toolbar)
         layout.addWidget(self.widget)
-
-    def submitCustomPicture(self):
-        self.widget.submitPicture()
-        self.close()
+        layout.addWidget(self.label)
