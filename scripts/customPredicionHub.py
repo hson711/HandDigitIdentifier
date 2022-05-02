@@ -2,7 +2,6 @@ from customPainter import customPainter, ToolbarWindow
 import sys
 from PyQt5.QtWidgets import *
 from DNNFunctions import DNNFunctions
-from painter import Ui_Dialog
 
 class customPredicionHub(QDialog):
 

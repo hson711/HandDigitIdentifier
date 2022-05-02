@@ -25,6 +25,7 @@ class Window(QMainWindow):
 
     #Main Window Initializer Function
     def __init__(self, parent=None):
+
         super().__init__(parent)
         self.setWindowTitle('Handwritten Digit/English Recognizer')
         self.setGeometry(300, 300, 400, 300)
@@ -34,6 +35,7 @@ class Window(QMainWindow):
     #Output:Dataset Training Window
     #Function called upon by main window toolbar to access a new window to train installed dataset
     def openSideWindow(self):
+
         if (DNNFunctions.data_loaded != True):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
@@ -51,6 +53,7 @@ class Window(QMainWindow):
     #Output: Main Window Toolbar and connections
     #Function called upon by main window instance to set the toolbar and initialize its connections to functions
     def _createMenu(self):
+
         self.menu = self.menuBar().addMenu("&File")
 
         datasetAction = self.menu.addAction('&Import Dataset')
@@ -73,19 +76,28 @@ class Window(QMainWindow):
     #Output: Custom Painter Menu Window
     #Function called upon to create a new window to predict custom dataset
     def openCustomPainter(self):
+
         self.loadModel = QWidget()
         loadModelUi = Ui_loadModelUI()
         loadModelUi.setupUi(self.loadModel)
         self.loadModel.show()
         
-
+    #Input: Main Window Instance
+    #Output: dropDownDatasets Window/ Import Dataset Screen
+    #Function that checks if the data is downloaded and if it is already downloaded opens up a screen to ask what specific data set to use, otherwise just opens the downloading
+    #data screen menu
     def importDataset(self):
+
         if DNNFunctions.keys != NULL:
             self.dropDownDatasets = dropDownDatasets()
         else:
             self.dropDownDatasets = importDatasetScreen("")
+
         self.dropDownDatasets.show()
     
+    #Input: Main Window Instance
+    #Output: Error Message/ Drop Down Photo Viewer Instance
+    #A function that checks if dataset is loaded, if not displays an error, otherwise it opens a dataset viewer screen
     def viewDatasetPhotos(self):
         if (DNNFunctions.data_loaded != True):
             msg = QMessageBox()
@@ -98,6 +110,9 @@ class Window(QMainWindow):
             self.viewDataset = dropDownPhotoViewer()
             self.viewDataset.show()
     
+    #Input: Main Window Instance
+    #Output: Custom Prediction Hub Instance
+    #Function that when called opens the custom prediction hub window
     def customPredHub(self):
         self.customPredictionHub = customPredicionHub()
         self.customPredictionHub.show()
