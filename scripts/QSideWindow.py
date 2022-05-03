@@ -143,6 +143,8 @@ class Ui_trainWindow(object):
 
         #Choosing the validation ratio
         self.horizontalSlider.valueChanged[int].connect(self.updateSliderVal)
+        print(DNNFunctions.test_x)
+        print(DNNFunctions.test_y)
 
         #Training the Model
         self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value(), self.modelName.text(), (self.horizontalSlider.value()/100)))

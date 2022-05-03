@@ -19,17 +19,19 @@ from DNNFunctions import DNNFunctions
 from importDatasetScreen import importDatasetScreen
 from PyQt5.QtWidgets import QMessageBox
 from loadModel import *
+from modelLoad import modelLoad
+
 
 #Class that creates the main menu window
 class Window(QMainWindow):
 
     #Main Window Initializer Function
     def __init__(self, parent=None):
-
         super().__init__(parent)
         self.setWindowTitle('Handwritten Digit/English Recognizer')
         self.setGeometry(300, 300, 400, 300)
         self._createMenu()
+        
     
     #Input: Main Window Instance
     #Output:Dataset Training Window
@@ -76,11 +78,17 @@ class Window(QMainWindow):
     #Output: Custom Painter Menu Window
     #Function called upon to create a new window to predict custom dataset
     def openCustomPainter(self):
-
-        self.loadModel = QWidget()
-        loadModelUi = Ui_loadModelUI()
-        loadModelUi.setupUi(self.loadModel)
-        self.loadModel.show()
+        if (DNNFunctions.data_loaded != True):
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('Dataset has not been imported. Please Import dataset to view')
+            msg.setWindowTitle("No dataset imported")
+            msg.exec_()
+        else:
+            self.modelLoad = modelLoad()
+            self.modelLoad.show()
+        
         
     #Input: Main Window Instance
     #Output: dropDownDatasets Window/ Import Dataset Screen

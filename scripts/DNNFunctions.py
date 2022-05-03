@@ -52,6 +52,7 @@ class DNNFunctions():
 
     model = NULL
     loaded_model = NULL
+    loaded_model_results = NULL
     
     def __init__(self):
         return
@@ -161,6 +162,8 @@ class DNNFunctions():
         DNNFunctions.train_x = DNNFunctions.train_x.reshape(-1, 28, 28, 1)
         DNNFunctions.test_x = DNNFunctions.test_x.reshape(-1, 28, 28, 1)
 
+
+        #Create Sequential Model
         DNNFunctions.model = Sequential()
         DNNFunctions.model.add(Conv2D(32, kernel_size=(3, 3), strides=1,activation='relu', input_shape = (28, 28, 1)))
         DNNFunctions.model.add(BatchNormalization())
@@ -171,8 +174,9 @@ class DNNFunctions():
         DNNFunctions.model.add(Dropout(0.4))
         DNNFunctions.model.add(Dense(128, activation='relu'))
         DNNFunctions.model.add(Dense(62, activation='softmax'))
-
         DNNFunctions.model._name = modelName
+
+        #Complie Model and Fit to train with metrics for accuracy and chosen settings for training
         DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
         DNNFunctions.model.fit(DNNFunctions.train_x, DNNFunctions.train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio)
 

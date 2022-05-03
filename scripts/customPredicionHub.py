@@ -31,7 +31,6 @@ class customPredicionHub(QDialog):
     
     #Function linked to button1 to select premade photos as the submission option
     def on_click1(self):
-
         fileNames = QFileDialog.getOpenFileNames(self,("Open Image"), "", ("Image Files (*.png *.jpg *.bmp)"))
         print(fileNames[0])
 
