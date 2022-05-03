@@ -1,3 +1,4 @@
+import imp
 import sys
 from tabnanny import verbose
 from tkinter import Label
@@ -15,6 +16,7 @@ from subprocess import *
 from PyQt5.QtWidgets import (QApplication, QMessageBox, QPushButton, QVBoxLayout, QFileDialog, QLabel)
 import pickle
 import re
+from customPredicionHub import *
 
 #Threading class to download dataset and update the progress bar without lagging UI
 class Thread(QThread):
@@ -56,7 +58,11 @@ class Thread(QThread):
 
                 if self.p.poll() is not None:
                     print("It finished")
-                    print(DNNFunctions.loaded_model_results[0])
+
+                    with open(self.path, 'rb') as f: 
+                        results = pickle.load(f)
+                    
+                    DNNFunctions.loaded_model_results = results
                     self.running = False
                     self.closeSignal.emit()
                     break
@@ -82,7 +88,7 @@ class modelLoad(QDialog):
     def __init__(self):
 
         super().__init__()
-
+    
         self.initUI()
 
     #Initializes look of gui and connections
@@ -130,6 +136,8 @@ class modelLoad(QDialog):
         self.button.clicked.connect(self.onButtonClick)
         self.button2.clicked.connect(self.on_stop)
 
+        self.progress.setVisible(False)
+
         #Creates thead and passes it the dataset class to use
         #Connects the thread signals to respective functions
         self.thread2 = Thread(string=(DNNFunctions.loaded_model))
@@ -148,16 +156,14 @@ class modelLoad(QDialog):
     #Function that is passed the realtime output of the download progress to the console
     def downloaded(self,string):
         #Strips the string and organises it into a readable time estimate
-        print(string)
         string = string.split()
-        print(string[0])
         try:
             current_val = re.findall(r"(\d+)/", string[0])
             max_val = re.findall(r'%s(\d+)' % '/', string[0])
-            print(current_val)
             self.progress.setValue(int(current_val[0]))
-            loaded = (int(current_val[0])/int(max_val[0]))*100
-            self.label.setText("{:.1f}% Loaded  | ETA: {}".format(loaded, string[4]))
+            if (int(current_val[0]) != int(max_val[0])):
+                loaded = (int(current_val[0])/int(max_val[0]))*100
+                self.label.setText("{:.1f}% Loaded  | ETA: {}".format(loaded, string[4]))
         except Exception as e:
             print(e)
             pass
@@ -166,9 +172,6 @@ class modelLoad(QDialog):
     #Function which is called when thread is initialized to set the maximum value of the progress bar
     #Input is passed one line of realtime output of the download progress
     def setMaximum(self,value):
-
-        print("max val:")
-        print(value)
         #Strips and decodes the passed string into digits
         try:
             string = value.split()
@@ -185,15 +188,16 @@ class modelLoad(QDialog):
     
     #Function is called when thread passes a close signal which closes the import dataset window
     def closeSignal(self):
+        QMessageBox.information(self, "Load Successful", "Model Loaded Successfully!")
+        self.customPredictionHub = customPredicionHub()
+        self.customPredictionHub.show()
         self.close()
 
     
     def onButtonClick(self):
         model_path = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
-        print(model_path)
         if model_path != "":
             if (DNNFunctions.model_load(model_path) == True):
-                print(DNNFunctions.loaded_model.name)
                 file_path = str(pathlib.Path(__file__).parent.resolve())
                 file = file_path+"/objs.pkl"
 
@@ -209,8 +213,8 @@ class modelLoad(QDialog):
 
                  #Enables stop button
                 self.button2.setEnabled(True)
-
                 self.label.setText("Loading....Please Wait")
+                self.progress.setVisible(True)
                 #Resets progress bar 
                 self.progress.setValue(0)
                 #Starts the thread object

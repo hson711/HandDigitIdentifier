@@ -23,3 +23,6 @@ with open(path, 'rb') as f:
 DNNFunctions.model_load(model_path)
 
 DNNFunctions.loaded_model_results = DNNFunctions.loaded_model.evaluate(test_x, test_y)
+
+with open(path, 'wb') as f:  # Python 3: open(..., 'wb')
+    pickle.dump(DNNFunctions.loaded_model_results, f, -1)

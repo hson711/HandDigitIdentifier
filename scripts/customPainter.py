@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from DNNFunctions import DNNFunctions
+import pathlib
 
 #Custom Painter Class allows the user to draw a custom picture which can be used by the Neural Network for predictions
 class customPainter(QtWidgets.QLabel):
@@ -74,9 +75,13 @@ class customPainter(QtWidgets.QLabel):
 
         screen = QApplication.primaryScreen()
         screenshot = screen.grabWindow(self.winId() )
-        screenshot.save('../bin/screenshot.jpg', 'jpg')
-        ToolbarWindow.label
-        ToolbarWindow.label.setText('Prediction: {}'.format(DNNFunctions.predict('../bin/screenshot.jpg')))
+
+        file_path = str(pathlib.Path(__file__).parent.resolve())
+        temp_save_loc = file_path+'/../bin/screenshot.jpg'
+        screenshot.save(temp_save_loc, 'jpg')
+        print("Prediction: {}".format(DNNFunctions.predict(temp_save_loc)))
+        # ToolbarWindow.label
+        # ToolbarWindow.label.setText('Prediction: {}'.format(DNNFunctions.predict(temp_save_loc)))
 
 #ToolbarWindow class exsists to be the parent layout to the painter class so that the painter class has a usable toolbar attached
 class ToolbarWindow(QDialog):
@@ -102,3 +107,7 @@ class ToolbarWindow(QDialog):
         layout.setMenuBar(toolbar)
         layout.addWidget(self.widget)
         layout.addWidget(self.label)
+
+    def submitCustomPicture(self):
+        self.widget.submitPicture()
+        
