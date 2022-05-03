@@ -16,14 +16,72 @@ import gevent
 import subprocess
 from subprocess import *
 from PyQt5.QtWidgets import (QApplication, QWidget, QLineEdit, QTextBrowser, QPushButton, QVBoxLayout)
-
+import pickle
 from DNNFunctions import DNNFunctions
 
 
+class Thread(QThread):
+    update_signal1 = pyqtSignal(str)
+    #Update_signal3 takes in the first string of data with eta and uses that to set the maximum value of the progress bar
+    update_signal3 = pyqtSignal(str)
+    #Close signal is a signal to stop the subprocess and close the window
+    closeSignal = pyqtSignal()
+
+    #Initialized Thread and setup variables
+    #Takes a string input of what dataset class to activate
+    def __init__(self, string,  *args, **kwargs):
+
+        super(Thread, self).__init__(*args, **kwargs)
+        self.Finished   = False
+        self.string = string
+        self.running = True
+        self.path = ""
+
+    def run(self):
+        while self.running:
+            file_path = str(pathlib.Path(__file__).parent.resolve())
+            file_loc = file_path+'\SubprocessImporterLoad.py'
+            
+            self.p = subprocess.Popen([sys.executable, file_loc, self.path], stdout = PIPE)
+            #For loop to skip the first few lines of text of the realtime output as its not needed
+            for i in range(5):
+                self.realtime_output = self.p.stdout.readline()
+
+            #Decodes the bytes of realtime output into a number and feeds that to the update signal to set max value of progress bar
+            maxValue = self.realtime_output.decode("cp1252")
+
+            
+            self.update_signal3.emit(maxValue.strip())
+            
+            
+            while True:
+                self.realtime_output = self.p.stdout.readline()
+
+                if self.p.poll() is not None:
+                    print("It finished")
+
+                    with open(self.path, 'rb') as f: 
+                        results = pickle.load(f)
+                    
+                    DNNFunctions.loaded_model_results = results
+                    self.running = False
+                    self.closeSignal.emit()
+                    break
+               # print(classification_report(Y_test, y_pred)) 
+
+                if self.realtime_output:
+                   self.realtime_output = self.realtime_output.decode("cp1252")
+                   self.update_signal1.emit(self.realtime_output.strip())
+
+
+     #Stop function is called by the stop button of the gui to stop the subprocess and stop running the thread
+    def stop(self):
+        self.running = False
+        self.p.terminate()
+
+
+
 #Created using QTdesigner from the trainWindow.ui
-
-
-
 class Ui_trainWindow(object):
     def setupUi(self, trainWindow):
         trainWindow.setObjectName("trainWindow")

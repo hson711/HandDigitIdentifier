@@ -178,7 +178,7 @@ class DNNFunctions():
 
         #Complie Model and Fit to train with metrics for accuracy and chosen settings for training
         DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
-        DNNFunctions.model.fit(DNNFunctions.train_x, DNNFunctions.train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio)
+        DNNFunctions.model.fit(DNNFunctions.train_x, DNNFunctions.train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio, verbose=1)
 
     def model_load(model_path):
         try:

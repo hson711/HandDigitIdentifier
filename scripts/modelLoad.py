@@ -8,9 +8,6 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from numpy import NaN, integer
 from DNNFunctions import *
 import contextlib
-import io
-import threading
-import gevent
 import subprocess
 from subprocess import *
 from PyQt5.QtWidgets import (QApplication, QMessageBox, QPushButton, QVBoxLayout, QFileDialog, QLabel)
@@ -25,6 +22,8 @@ class Thread(QThread):
     update_signal3 = pyqtSignal(str)
     #Close signal is a signal to stop the subprocess and close the window
     closeSignal = pyqtSignal()
+
+    cancelSignal = pyqtSignal()
 
     #Initialized Thread and setup variables
     #Takes a string input of what dataset class to activate
@@ -58,13 +57,16 @@ class Thread(QThread):
 
                 if self.p.poll() is not None:
                     print("It finished")
-
-                    with open(self.path, 'rb') as f: 
-                        results = pickle.load(f)
                     
-                    DNNFunctions.loaded_model_results = results
-                    self.running = False
-                    self.closeSignal.emit()
+                    if (self.running ==False):
+                        self.cancelSignal.emit()
+                    else:
+                        with open(self.path, 'rb') as f: 
+                            results = pickle.load(f)
+                        
+                        DNNFunctions.loaded_model_results = results
+                        self.running = False
+                        self.closeSignal.emit()
                     break
                # print(classification_report(Y_test, y_pred)) 
 
@@ -144,6 +146,11 @@ class modelLoad(QDialog):
         self.thread2.update_signal1.connect(self.downloaded)
         self.thread2.update_signal3.connect(self.setMaximum)
         self.thread2.closeSignal.connect(self.closeSignal)
+        self.thread2.cancelSignal.connect(self.cancelSignal)
+
+    def cancelSignal(self):
+        self.label.setText("Load Model")
+        self.progress.setVisible(False)
 
     #On stop button pushed
     def on_stop(self):
@@ -182,8 +189,9 @@ class modelLoad(QDialog):
 
             loaded_val = (int(current_val[0])/int(max_val[0]))*100
             self.label.setText("{:.1f}% Loaded  | ETA: {}".format(loaded_val), string[4])
-        except Exception:
+        except Exception as e:
             print("max exception")
+            print(e)
             pass
     
     #Function is called when thread passes a close signal which closes the import dataset window
