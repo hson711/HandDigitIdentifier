@@ -178,10 +178,7 @@ class DNNFunctions():
         pix = QPixmap.fromImage(image)
         return pix
 
-    def train(chosenOptimiser, chosenEpochs, batchSize, modelName, validation_ratio):
-        
-
-
+    def make_model():    
         #Create Sequential Model
         DNNFunctions.model = Sequential()
         DNNFunctions.model.add(Conv2D(32, kernel_size=(3, 3), strides=1,activation='relu', input_shape = (28, 28, 1)))
@@ -193,12 +190,7 @@ class DNNFunctions():
         DNNFunctions.model.add(Dropout(0.4))
         DNNFunctions.model.add(Dense(128, activation='relu'))
         DNNFunctions.model.add(Dense(62, activation='softmax'))
-        DNNFunctions.model._name = modelName
-
-        #Complie Model and Fit to train with metrics for accuracy and chosen settings for training
-        DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
-        DNNFunctions.model.fit(DNNFunctions.train_x, DNNFunctions.train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio, verbose=2)
-
+        
     def model_load(model_path):
         try:
             DNNFunctions.loaded_model = load_model(model_path)
