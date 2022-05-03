@@ -5,7 +5,7 @@ Python 3.7 or above and has not been tested with versions below so may have
 compatibility issues when using Python 3.6 and below.
 
 ##Required libraries include:
-Required Libraries Include:
+Required Libraries Include: ##THESE ARE LIBRARIES CHECKED FOR BEFORE I INSTALLED YOUR LIBRARIES##
 Package                      Version
 ---------------------------- -------------------
 absl-py                      1.0.0
