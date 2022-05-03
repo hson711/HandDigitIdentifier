@@ -16,14 +16,83 @@ import gevent
 import subprocess
 from subprocess import *
 from PyQt5.QtWidgets import (QApplication, QWidget, QLineEdit, QTextBrowser, QPushButton, QVBoxLayout)
-
+import pickle
 from DNNFunctions import DNNFunctions
 
 
+class Thread(QThread):
+    update_signal1 = pyqtSignal(str)
+    #Update_signal3 takes in the first string of data with eta and uses that to set the maximum value of the progress bar
+    update_signal3 = pyqtSignal(str)
+    #Close signal is a signal to stop the subprocess and close the window
+    closeSignal = pyqtSignal()
+
+    cancelSignal = pyqtSignal()
+
+    #Initialized Thread and setup variables
+    #Takes a string input of what dataset class to activate
+    def __init__(self, string,  *args, **kwargs):
+
+        super(Thread, self).__init__(*args, **kwargs)
+        self.Finished   = False
+        self.string = string
+        self.running = True
+        self.path = ""
+
+    def run(self):
+        while self.running:
+            file_path = str(pathlib.Path(__file__).parent.resolve())
+            file_loc = file_path+'\SubprocessImporterLoad.py'
+            
+            self.p = subprocess.Popen([sys.executable, file_loc, self.path], stdout = PIPE)
+            #For loop to skip the first few lines of text of the realtime output as its not needed
+            for i in range(5):
+                self.realtime_output = self.p.stdout.readline()
+
+            #Decodes the bytes of realtime output into a number and feeds that to the update signal to set max value of progress bar
+            maxValue = self.realtime_output.decode("cp1252")
+
+            
+            self.update_signal3.emit(maxValue.strip())
+            
+            
+            while True:
+                self.realtime_output = self.p.stdout.readline()
+
+                if self.p.poll() is not None:
+                    print("It finished")
+                    
+                    #Checks if cancel was clicked
+                    if (self.running ==False):
+                        self.cancelSignal.emit()
+                    else:
+
+                        #Get results from tmp file
+                        with open(self.path, 'rb') as f: 
+                            results = pickle.load(f)
+                        
+                        DNNFunctions.loaded_model_results = results
+                        self.running = False
+                        self.closeSignal.emit()
+                    break
+               # print(classification_report(Y_test, y_pred)) 
+
+                if self.realtime_output:
+                   self.realtime_output = self.realtime_output.decode("cp1252")
+                   self.update_signal1.emit(self.realtime_output.strip())
+
+
+     #Stop function is called by the stop button of the gui to stop the subprocess and stop running the thread
+    def stop(self):
+        self.running = False
+        self.p.terminate()
+
+
+
+
+
+
 #Created using QTdesigner from the trainWindow.ui
-
-
-
 class Ui_trainWindow(object):
     def setupUi(self, trainWindow):
         trainWindow.setObjectName("trainWindow")
@@ -143,11 +212,15 @@ class Ui_trainWindow(object):
 
         #Choosing the validation ratio
         self.horizontalSlider.valueChanged[int].connect(self.updateSliderVal)
-        print(DNNFunctions.test_x)
-        print(DNNFunctions.test_y)
 
         #Training the Model
-        self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value(), self.modelName.text(), (self.horizontalSlider.value()/100)))
+        self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value(), self.modelName.text(), (1-(self.horizontalSlider.value()/100))))
+
+        self.thread2 = Thread(string=(DNNFunctions.loaded_model))
+        self.thread2.update_signal1.connect(self.downloaded)
+        self.thread2.update_signal3.connect(self.setMaximum)
+        self.thread2.closeSignal.connect(self.closeSignal)
+        self.thread2.cancelSignal.connect(self.cancelSignal)
     
 
     def retranslateUi(self, trainWindow):
@@ -168,8 +241,6 @@ class Ui_trainWindow(object):
         self.label_9.setText(_translate("trainWindow", "Split the training dataset for validation (%)"))
         self.label_10.setText(_translate("trainWindow", "0%"))
         
-        for k in DNNFunctions.keys:
-            print (k)
 
     def updateSliderVal(self, value):
         self.label_10.setText(QtCore.QCoreApplication.translate("trainWindow", str(value)+"%"))
