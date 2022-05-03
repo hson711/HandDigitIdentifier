@@ -79,7 +79,8 @@ class customPainter(QtWidgets.QLabel):
         file_path = str(pathlib.Path(__file__).parent.resolve())
         temp_save_loc = file_path+'/../bin/screenshot.jpg'
         screenshot.save(temp_save_loc, 'jpg')
-        print("Prediction: {}".format(DNNFunctions.predict(temp_save_loc)))
+        predictedValue = DNNFunctions.predict(temp_save_loc)
+        DNNFunctions.predictedValue = str(predictedValue)
         # ToolbarWindow.label
         # ToolbarWindow.label.setText('Prediction: {}'.format(DNNFunctions.predict(temp_save_loc)))
 
@@ -110,4 +111,7 @@ class ToolbarWindow(QDialog):
 
     def submitCustomPicture(self):
         self.widget.submitPicture()
+        tempString = ("Prediction: {}".format(DNNFunctions.predictedValue))
+        self.label.setText(tempString)
+
         

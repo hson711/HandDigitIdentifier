@@ -1,3 +1,4 @@
+import os
 from asyncio.windows_events import NULL
 from importlib.resources import path
 import pathlib
@@ -12,7 +13,6 @@ import numpy as np
 import struct
 import random
 import gzip
-import os
 import gzip
 from extra_keras_datasets import emnist
 from pandas import array
@@ -26,6 +26,8 @@ import numpy, scipy.io, zipfile
 from PIL.ImageQt import ImageQt
 from torchvision.transforms import ToPILImage
 from scipy import *
+import contextlib
+import io
 
 #Class that hold all global variables and functions related to the downloading of data
 class DNNFunctions():
@@ -34,6 +36,7 @@ class DNNFunctions():
     #Class Variable
     (raw_train_x, raw_train_y), (raw_test_x, raw_test_y) = (NULL, NULL), (NULL, NULL)
     (train_x, train_y), (test_x, test_y) = (NULL, NULL), (NULL, NULL)
+    predictedValue = NULL
 
     #Sets up the path to the downloaded file if its downloaded
     w = NULL
@@ -209,17 +212,15 @@ class DNNFunctions():
     def predict(img_path):
         DNNFunctions.model = DNNFunctions.loaded_model
         image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE )
-        print(image.shape)
 
         resized_img = cv2.resize(image, (28, 28))
         resized_img = resized_img/255
         resized_img = np.expand_dims(resized_img, axis=2)
         resized_img = resized_img.reshape(-1,28,28,1)
 
-        results = np.round(DNNFunctions.model.predict(resized_img, verbose=1), decimals=2)
+        with contextlib.redirect_stdout(io.StringIO()):
+            results = np.round(DNNFunctions.model.predict(resized_img, verbose=1), decimals=2)
         resultLabels = np.argmax(results, axis = 1)
-        print(resultLabels)
-        print('Pred: {}'.format(DNNFunctions.labels[resultLabels[0]]))
         return(DNNFunctions.labels[resultLabels[0]])
         
         
