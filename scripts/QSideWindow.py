@@ -27,6 +27,8 @@ class Thread(QThread):
     #Close signal is a signal to stop the subprocess and close the window
     closeSignal = pyqtSignal()
 
+    cancelSignal = pyqtSignal()
+
     #Initialized Thread and setup variables
     #Takes a string input of what dataset class to activate
     def __init__(self, string,  *args, **kwargs):
@@ -59,13 +61,19 @@ class Thread(QThread):
 
                 if self.p.poll() is not None:
                     print("It finished")
-
-                    with open(self.path, 'rb') as f: 
-                        results = pickle.load(f)
                     
-                    DNNFunctions.loaded_model_results = results
-                    self.running = False
-                    self.closeSignal.emit()
+                    #Checks if cancel was clicked
+                    if (self.running ==False):
+                        self.cancelSignal.emit()
+                    else:
+
+                        #Get results from tmp file
+                        with open(self.path, 'rb') as f: 
+                            results = pickle.load(f)
+                        
+                        DNNFunctions.loaded_model_results = results
+                        self.running = False
+                        self.closeSignal.emit()
                     break
                # print(classification_report(Y_test, y_pred)) 
 
@@ -78,6 +86,9 @@ class Thread(QThread):
     def stop(self):
         self.running = False
         self.p.terminate()
+
+
+
 
 
 
@@ -201,11 +212,15 @@ class Ui_trainWindow(object):
 
         #Choosing the validation ratio
         self.horizontalSlider.valueChanged[int].connect(self.updateSliderVal)
-        print(DNNFunctions.test_x)
-        print(DNNFunctions.test_y)
 
         #Training the Model
-        self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value(), self.modelName.text(), (self.horizontalSlider.value()/100)))
+        self.pushButton.clicked.connect(lambda: self.train_model(self.chosenOptimiser.currentText().lower(),self.chosenEpoch.value(), self.batchSize.value(), self.modelName.text(), (1-(self.horizontalSlider.value()/100))))
+
+        self.thread2 = Thread(string=(DNNFunctions.loaded_model))
+        self.thread2.update_signal1.connect(self.downloaded)
+        self.thread2.update_signal3.connect(self.setMaximum)
+        self.thread2.closeSignal.connect(self.closeSignal)
+        self.thread2.cancelSignal.connect(self.cancelSignal)
     
 
     def retranslateUi(self, trainWindow):
@@ -226,8 +241,6 @@ class Ui_trainWindow(object):
         self.label_9.setText(_translate("trainWindow", "Split the training dataset for validation (%)"))
         self.label_10.setText(_translate("trainWindow", "0%"))
         
-        for k in DNNFunctions.keys:
-            print (k)
 
     def updateSliderVal(self, value):
         self.label_10.setText(QtCore.QCoreApplication.translate("trainWindow", str(value)+"%"))

@@ -69,6 +69,22 @@ class DNNFunctions():
         #If file is not downloaded, download and load the by class data
         if os.path.isfile(DNNFunctions.pathFile) == False:
             (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = emnist.load_data(type='byclass')
+
+            #Reshape the dataset to process for the model
+            DNNFunctions.train_x = DNNFunctions.raw_train_x.reshape(len(DNNFunctions.raw_train_x), 784)
+            DNNFunctions.test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
+
+            DNNFunctions.train_x = DNNFunctions.train_x.astype('float32')
+            DNNFunctions.test_x = DNNFunctions.test_x.astype('float32')
+            DNNFunctions.train_x = DNNFunctions.train_x/255
+            DNNFunctions.test_x = DNNFunctions.test_x/255
+
+            DNNFunctions.train_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_train_y)
+            DNNFunctions.test_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_test_y)
+
+            DNNFunctions.train_x = DNNFunctions.train_x.reshape(-1, 28, 28, 1)
+            DNNFunctions.test_x = DNNFunctions.test_x.reshape(-1, 28, 28, 1)
+
         #if downloaded, open the downloaded data
         else:
             DNNFunctions.openPreDownloadedDataset(string)
@@ -105,6 +121,21 @@ class DNNFunctions():
                     (input_test.shape[0], 28, 28), order="F"
                 )
                 (DNNFunctions.raw_train_x, DNNFunctions.raw_train_y), (DNNFunctions.raw_test_x, DNNFunctions.raw_test_y) = (input_train, target_train), (input_test, target_test)
+                
+                #Reshape the dataset to process for the model
+                DNNFunctions.train_x = DNNFunctions.raw_train_x.reshape(len(DNNFunctions.raw_train_x), 784)
+                DNNFunctions.test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
+
+                DNNFunctions.train_x = DNNFunctions.train_x.astype('float32')
+                DNNFunctions.test_x = DNNFunctions.test_x.astype('float32')
+                DNNFunctions.train_x = DNNFunctions.train_x/255
+                DNNFunctions.test_x = DNNFunctions.test_x/255
+
+                DNNFunctions.train_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_train_y)
+                DNNFunctions.test_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_test_y)
+
+                DNNFunctions.train_x = DNNFunctions.train_x.reshape(-1, 28, 28, 1)
+                DNNFunctions.test_x = DNNFunctions.test_x.reshape(-1, 28, 28, 1)
         #depending on the chosen class calls the setLabel function
         DNNFunctions.setLabel(string)
         
@@ -148,19 +179,7 @@ class DNNFunctions():
         return pix
 
     def train(chosenOptimiser, chosenEpochs, batchSize, modelName, validation_ratio):
-        DNNFunctions.train_x = DNNFunctions.raw_train_x.reshape(len(DNNFunctions.raw_train_x), 784)
-        DNNFunctions.test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
-
-        DNNFunctions.train_x = DNNFunctions.train_x.astype('float32')
-        DNNFunctions.test_x = DNNFunctions.test_x.astype('float32')
-        DNNFunctions.train_x = DNNFunctions.train_x/255
-        DNNFunctions.test_x = DNNFunctions.test_x/255
-
-        DNNFunctions.train_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_train_y)
-        DNNFunctions.test_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_test_y)
-
-        DNNFunctions.train_x = DNNFunctions.train_x.reshape(-1, 28, 28, 1)
-        DNNFunctions.test_x = DNNFunctions.test_x.reshape(-1, 28, 28, 1)
+        
 
 
         #Create Sequential Model
@@ -178,7 +197,7 @@ class DNNFunctions():
 
         #Complie Model and Fit to train with metrics for accuracy and chosen settings for training
         DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosenOptimiser, metrics=['accuracy'])
-        DNNFunctions.model.fit(DNNFunctions.train_x, DNNFunctions.train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio, verbose=1)
+        DNNFunctions.model.fit(DNNFunctions.train_x, DNNFunctions.train_y, epochs=chosenEpochs, batch_size=batchSize, validation_split=validation_ratio, verbose=2)
 
     def model_load(model_path):
         try:

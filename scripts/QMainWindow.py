@@ -20,7 +20,7 @@ from importDatasetScreen import importDatasetScreen
 from PyQt5.QtWidgets import QMessageBox
 from loadModel import *
 from modelLoad import modelLoad
-
+from trainWindow import *
 
 #Class that creates the main menu window
 class Window(QMainWindow):
@@ -46,10 +46,12 @@ class Window(QMainWindow):
             msg.setWindowTitle("No dataset imported")
             msg.exec_()
         else:
-            self.trainWindow = QWidget()
-            trainUi = Ui_trainWindow()
-            trainUi.setupUi(self.trainWindow)
+            self.trainWindow = trainWindow()
             self.trainWindow.show()
+            # self.trainWindow = QWidget()
+            # trainUi = Ui_trainWindow()
+            # trainUi.setupUi(self.trainWindow)
+            # self.trainWindow.show()
 
     #Input: Main Window Instance
     #Output: Main Window Toolbar and connections
