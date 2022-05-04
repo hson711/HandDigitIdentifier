@@ -1,4 +1,5 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from asyncio.windows_events import NULL
 from importlib.resources import path
 import pathlib
