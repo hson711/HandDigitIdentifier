@@ -1,17 +1,9 @@
 from asyncio.windows_events import NULL
 import sys
-from PyQt5.QtWidgets import QInputDialog, QLineEdit, QFileDialog
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QStatusBar
-from PyQt5.QtWidgets import QToolBar
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5 import QtCore
 from QSideWindow import Ui_trainWindow
 from customPredicionHub import customPredicionHub
 from dropDownDatasets import dropDownDatasets, dropDownPhotoViewer
@@ -32,7 +24,6 @@ class Window(QMainWindow):
         self.setGeometry(300, 300, 400, 300)
         self.file_path = str(pathlib.Path(__file__).parent.resolve())
         temp_save_loc = self.file_path+'/../bin/logo.png'
-        print(temp_save_loc)
         logoWidget = QPixmap(temp_save_loc)
         logoWidget = logoWidget.scaled(400, 300, QtCore.Qt.KeepAspectRatio)
         imageLabel = QLabel(self)
