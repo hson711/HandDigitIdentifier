@@ -49,7 +49,8 @@ class Thread(QThread):
                     #If subprocess is finished
                     if self.p.poll() is not None:
                         #Loads the downloaded dataset
-                        DNNFunctions.openPreDownloadedDataset(self.string)
+                        if self.Finished == False:
+                            DNNFunctions.openPreDownloadedDataset(self.string)
                         #Stops the while loop and closes the window and subprocess
                         self.running = False
                         self.closeSignal.emit()
@@ -166,6 +167,8 @@ class importDatasetScreen(QDialog):
     #On stop button pushed
     def on_stop(self):
         #Stops the thread instance
+        self.thread2.Finished = True
+        self.thread2.p.terminate()
         self.thread2.stop()
         #Enables start and clear cache button and disables stop button
         self.button.setEnabled(True)

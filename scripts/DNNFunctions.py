@@ -47,10 +47,6 @@ class DNNFunctions():
     pathFile = os.path.join(location, file)\
     #Initializes keys
     keys = {'matlab/emnist-balanced.mat', 'matlab/emnist-byclass.mat', 'matlab/emnist-bymerge.mat', 'matlab/emnist-digits.mat', 'matlab/emnist-letters.mat', 'matlab/emnist-mnist.mat'}
-    #If file is downloaded loads keys
-    if os.path.isfile(pathFile) == True:
-            numpyObject = numpy.load(pathFile)
-            keys = numpyObject.keys()
     #Preset labels
     labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
