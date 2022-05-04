@@ -68,7 +68,7 @@ class photoViewerWindow(QMainWindow):
 
         self.setGeometry(600, 100, 933, 600)
         self.setFixedSize(933,600)
-        self.setWindowTitle('Scroll Area Demonstration')
+        self.setWindowTitle('Dataset Viewer')
 
         self.show()
         self.loadData()
