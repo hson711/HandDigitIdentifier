@@ -30,6 +30,15 @@ class Window(QMainWindow):
         super().__init__(parent)
         self.setWindowTitle('Handwritten Digit/English Recognizer')
         self.setGeometry(300, 300, 400, 300)
+        self.file_path = str(pathlib.Path(__file__).parent.resolve())
+        temp_save_loc = self.file_path+'/../bin/logo.png'
+        print(temp_save_loc)
+        logoWidget = QPixmap(temp_save_loc)
+        logoWidget = logoWidget.scaled(400, 300, QtCore.Qt.KeepAspectRatio)
+        imageLabel = QLabel(self)
+        imageLabel.setPixmap(logoWidget)
+        self.resize(logoWidget.width(),logoWidget.height())
+        self.setCentralWidget(imageLabel)
         self._createMenu()
         
     
