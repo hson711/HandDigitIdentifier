@@ -4,13 +4,11 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5 import QtCore
-from QSideWindow import Ui_trainWindow
 from customPredicionHub import customPredicionHub
 from dropDownDatasets import dropDownDatasets, dropDownPhotoViewer
 from DNNFunctions import DNNFunctions
 from importDatasetScreen import importDatasetScreen
 from PyQt5.QtWidgets import QMessageBox
-from loadModel import *
 from modelLoad import modelLoad
 from trainWindow import *
 
