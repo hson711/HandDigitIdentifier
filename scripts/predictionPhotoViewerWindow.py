@@ -65,7 +65,7 @@ class predictionPhotoViewerWindow(QMainWindow):
                     tempString2 = (" Accuracy: {}%".format(accuracy))
                     tempString = (tempString + '\n' + tempString2) 
                     predictionLabel = QLabel(tempString,self)
-                    if self.j == 4:
+                    if self.j == 2:
                         self.j = 0
                         self.i = self.i + 1
                     self.layout.addWidget(imageLabel,self.i,self.j)

@@ -1,7 +1,6 @@
-from customPainter import customPainter, ToolbarWindow
-import sys
+from customPainter import *
 from PyQt5.QtWidgets import *
-from DNNFunctions import DNNFunctions
+from DNNFunctions import *
 from predictionPhotoViewerWindow import predictionPhotoViewerWindow
 
 ## Qdialog Class that gives users the submission option for prediction of custom data

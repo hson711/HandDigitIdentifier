@@ -16,20 +16,20 @@ with open(path, 'rb') as f:
     model_name, chosen_optimiser, chosen_epoch, chosen_batch_size, chosen_train_ratio, save_check, train_x, train_y, save_loc = pickle.load(f)
 
 
+
+#Create Sequential Model to train
 DNNFunctions.make_model()
-#Create Sequential Model
+
 DNNFunctions.model._name = model_name.strip()
 chosen_train_ratio = 1-(chosen_train_ratio/100)
-print("Just")
-print(chosen_train_ratio)
-print("Maybe")
-print(chosen_epoch)
+
 
 #Complie Model and Fit to train with metrics for accuracy and chosen settings for training
 DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosen_optimiser, metrics=['accuracy'])
 DNNFunctions.model.fit(train_x, train_y, epochs=chosen_epoch, batch_size=chosen_batch_size, validation_split=chosen_train_ratio, verbose=1)
 
-print(save_check)
+
+#Save if button checked
 if(save_check):
     DNNFunctions.model.save(save_loc)
 

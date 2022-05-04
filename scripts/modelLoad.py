@@ -56,7 +56,6 @@ class Thread(QThread):
                 self.realtime_output = self.p.stdout.readline()
 
                 if self.p.poll() is not None:
-                    print("It finished")
                     
                     #Checks if cancel was clicked
                     if (self.running ==False):
@@ -69,9 +68,9 @@ class Thread(QThread):
                         
                         DNNFunctions.loaded_model_results = results
                         self.running = False
+                        self.p.kill()
                         self.closeSignal.emit()
                     break
-               # print(classification_report(Y_test, y_pred)) 
 
                 if self.realtime_output:
                    self.realtime_output = self.realtime_output.decode("cp1252")
@@ -81,9 +80,9 @@ class Thread(QThread):
      #Stop function is called by the stop button of the gui to stop the subprocess and stop running the thread
     def stop(self):
         self.running = False
-        self.p.terminate()
+        self.p.kil()
 
-#Class is the instance creator of the import datascreen window
+#Class is the instance creator of the load model window
 class modelLoad(QDialog):
     #Sets a base maxValue to set up progress bar
     maxValue = 1000
@@ -175,7 +174,6 @@ class modelLoad(QDialog):
                 loaded = (int(current_val[0])/int(max_val[0]))*100
                 self.label.setText("{:.1f}% Loaded  | ETA: {}".format(loaded, string[4]))
         except Exception as e:
-            print(e)
             pass
 
 
@@ -193,26 +191,30 @@ class modelLoad(QDialog):
             loaded_val = (int(current_val[0])/int(max_val[0]))*100
             self.label.setText("{:.1f}% Loaded  | ETA: {}".format(loaded_val), string[4])
         except Exception as e:
-            print("max exception")
-            print(e)
             pass
     
     #Function is called when thread passes a close signal which closes the import dataset window
     def closeSignal(self):
         QMessageBox.information(self, "Load Successful", "Model Loaded Successfully!")
-        print(DNNFunctions.loaded_model_results)
         self.customPredictionHub = customPredicionHub()
         self.customPredictionHub.show()
         self.close()
 
     
+    #When button clicked, run this
     def onButtonClick(self):
+
+        #Select Directory for load
         model_path = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
         if model_path != "":
+
+            #Check if model exists
             if (DNNFunctions.model_load(model_path) == True):
+                #Set up tempfile
                 file_path = str(pathlib.Path(__file__).parent.resolve())
                 file = file_path+"/objs.pkl"
 
+                #Reshape values to send to subprocess
                 DNNFunctions.test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
                 DNNFunctions.test_x = DNNFunctions.test_x.astype('float32')
                 DNNFunctions.test_x = DNNFunctions.test_x/255
@@ -220,7 +222,7 @@ class modelLoad(QDialog):
                 DNNFunctions.test_x = DNNFunctions.test_x.reshape(-1, 28, 28, 1)
 
 
-                with open(file, 'wb') as f:  # Python 3: open(..., 'wb')
+                with open(file, 'wb') as f: 
                     pickle.dump([model_path, DNNFunctions.test_x, DNNFunctions.test_y], f, -1)   
 
                  #Enables stop button
