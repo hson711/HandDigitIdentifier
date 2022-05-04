@@ -116,7 +116,7 @@ class ToolbarWindow(QDialog):
     def submitCustomPicture(self):
         self.widget.submitPicture()
         tempString = ("Prediction: {}".format(DNNFunctions.predictedValue))
-        accuracy =DNNFunctions.loaded_model_results[1]*100
+        accuracy =round(DNNFunctions.loaded_model_results[1]*100,2)
         tempString2 = ("Accuracy: {}%".format(accuracy))
         self.label.setText(tempString)
         self.accuracyLabel.setText(tempString2)
