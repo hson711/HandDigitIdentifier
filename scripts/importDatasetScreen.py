@@ -49,13 +49,12 @@ class Thread(QThread):
                     #If subprocess is finished
                     if self.p.poll() is not None:
                         #Loads the downloaded dataset
+                        #Stops the while loop and closes the window and subprocess
                         if self.Finished == False:
                             DNNFunctions.openPreDownloadedDataset(self.string)
-                        #Stops the while loop and closes the window and subprocess
                         self.running = False
                         self.closeSignal.emit()
                         break
-
                     #If self.realtime_output is not none then sends that through update signal 1 to be printed to gui
                     if self.realtime_output:
                         self.realtime_output = self.realtime_output.decode("cp1252")
@@ -185,6 +184,8 @@ class importDatasetScreen(QDialog):
         string = string.strip()
         string = string[-5:]
         string = string.split(":")
+        string[0] = string[0].strip()
+        string[1] = string[1].strip()
         #Checks to see if the string passed is a viable integer otherwise eta left is 0
         if  string[0].isdigit() and string[1].isdigit():
             min = int(float(string[0]))
@@ -203,6 +204,7 @@ class importDatasetScreen(QDialog):
         #Sets the progress bar to the starting eta minus by time left
         tempMax = self.progress.maximum()
         self.progress.setValue(tempMax-deductableTime)
+
 
     #Function which is called when thread is initialized to set the maximum value of the progress bar
     #Input is passed one line of realtime output of the download progress
