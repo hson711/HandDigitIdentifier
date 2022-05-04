@@ -147,17 +147,6 @@ class DNNFunctions():
 
                 
 
-
-    def convertCvImage2QtImage(cv_img): #function not used presently
-        if len(cv_img.shape)<3:
-            frame = cv2.cvtColor(cv_img, cv2.COLOR_GRAY2RGB)
-        else:
-            frame = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
-        h, w = cv_img.shape[:2]
-        bytesPerLine = 3 * w
-        qimage = QImage(frame.data, w, h, bytesPerLine, QImage.Format.Format_RGB888)
-        return qimage
-    
     #Function converts numpy array to image and is passed a numpy array from the dataset
     def convertNumpyArrayToImage(np1):
         img = ToPILImage()(np1)
@@ -165,13 +154,8 @@ class DNNFunctions():
         pix = QPixmap.fromImage(qim)
         return pix
 
-    def convertPILImageToPixmap(pilImage): #function not used presently
-        image = QImage(pilImage, pilImage.size[0], pilImage.size[1], QImage.Format_ARGB32)
-        pix = QPixmap.fromImage(image)
-        return pix
-
+    #Create Sequential Model
     def make_model():    
-        #Create Sequential Model
         DNNFunctions.model = Sequential()
         DNNFunctions.model.add(Conv2D(32, kernel_size=(3, 3), strides=1,activation='relu', input_shape = (28, 28, 1)))
         DNNFunctions.model.add(BatchNormalization())
