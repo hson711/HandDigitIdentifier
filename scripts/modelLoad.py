@@ -64,7 +64,7 @@ class Thread(QThread):
                         
                         DNNFunctions.loaded_model_results = results
                         self.running = False
-                        self.p.kill()
+                        self.p.terminate()
                         self.closeSignal.emit()
                     break
 
@@ -76,7 +76,7 @@ class Thread(QThread):
      #Stop function is called by the stop button of the gui to stop the subprocess and stop running the thread
     def stop(self):
         self.running = False
-        self.p.kil()
+        self.p.terminate()
 
 #Class is the instance creator of the load model window
 class modelLoad(QDialog):
@@ -208,7 +208,7 @@ class modelLoad(QDialog):
             if (DNNFunctions.model_load(model_path) == True):
                 #Set up tempfile
                 file_path = str(pathlib.Path(__file__).parent.resolve())
-                file = file_path+"/objs.pkl"
+                file = file_path+"/../bin/objs.pkl"
 
                 #Reshape values to send to subprocess
                 DNNFunctions.test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)

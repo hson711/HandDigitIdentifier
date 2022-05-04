@@ -508,11 +508,6 @@ class trainWindow(QDialog):
         with open(file, 'wb') as f:  # Python 3: open(..., 'wb')
             pickle.dump([self.modelName.text(), self.optimiser.currentText().lower(), self.epoch.value(), self.batch_size.value(), self.slider.value(), self.save_check.isChecked(), DNNFunctions.train_x, DNNFunctions.train_y, save_loc], f, -1)
 
-        #Start Thread
-        self.thread2.running = True
-        self.thread2.path = file
-        self.thread2.start()
-
         #Set labels for input to be not visible
         self.label.setText("Training Model:")
         self.optimiser_label.setVisible(False)
@@ -533,5 +528,11 @@ class trainWindow(QDialog):
         self.button.setVisible(False)
         self.button4.setVisible(False)
         self.label.setText("Loading. Please Wait....")
-        self.results_percentage_label.setText("Hekekek")
         self.results_percentage_label.setVisible(False)
+
+        #Start Thread
+        self.thread2.running = True
+        self.thread2.path = file
+        self.thread2.start()
+
+        
