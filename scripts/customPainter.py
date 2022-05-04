@@ -1,14 +1,14 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QMainWindow, QAction, qApp
-from PyQt5 import QtCore, uic, QtWidgets
+from PyQt5.QtWidgets import QApplication, QLabel, QAction, qApp
+from PyQt5 import QtWidgets
 from PyQt5 import QtGui
-from PyQt5.QtGui import QPainter, QPen
+from PyQt5.QtGui import  QPen
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDialog, QHBoxLayout, QToolBar, QWidget, QMenuBar
+from PyQt5.QtWidgets import QDialog, QHBoxLayout, QWidget, QMenuBar
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication,
-    QLabel, QToolBar, QAction, QStatusBar
+    QLabel, QToolBar, QAction
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, qApp
