@@ -2,6 +2,7 @@ from customPainter import customPainter, ToolbarWindow
 import sys
 from PyQt5.QtWidgets import *
 from DNNFunctions import DNNFunctions
+from predictionPhotoViewerWindow import predictionPhotoViewerWindow
 
 ## Qdialog Class that gives users the submission option for prediction of custom data
 class customPredicionHub(QDialog):
@@ -31,8 +32,9 @@ class customPredicionHub(QDialog):
     
     #Function linked to button1 to select premade photos as the submission option
     def on_click1(self):
-        fileNames = QFileDialog.getOpenFileNames(self,("Open Image"), "", ("Image Files (*.png *.jpg *.bmp)"))
-        print(fileNames[0])
+        fileNames = QFileDialog.getOpenFileNames(self,("Open Image"), "", ("Image Files (*.jpg)"))
+        fileNamesArray = fileNames[0]
+        self.predictionPhotoViewerWindow = predictionPhotoViewerWindow(fileNamesArray)
 
     #Function linked to button2 to select custom drawn photo as the submission option
     def on_click2(self):
