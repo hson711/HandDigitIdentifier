@@ -106,6 +106,10 @@ class ToolbarWindow(QDialog):
         toolbar.addAction(submitPicture)
         submitPicture.triggered.connect(self.submitCustomPicture)
 
+        clearBoard = QAction("Clear Board", toolbar)
+        toolbar.addAction(clearBoard)
+        clearBoard.triggered.connect(self.clearBoard)
+
         #Sets up layout of the toolbar
         layout.setMenuBar(toolbar)
         layout.addWidget(self.widget)
@@ -121,4 +125,7 @@ class ToolbarWindow(QDialog):
         self.label.setText(tempString)
         self.accuracyLabel.setText(tempString2)
 
-        
+    def clearBoard(self):
+        self.customPainterWindow = ToolbarWindow()
+        self.customPainterWindow.show()
+        self.close()
