@@ -92,8 +92,10 @@ class ToolbarWindow(QDialog):
 
         self.setWindowTitle('Digit Painter')
         self.label = QLabel('Prediction: ', self)
+        self.accuracyLabel = QLabel('Accuracy: ', self)
 
         layout = QHBoxLayout(self)
+        layout2 = QVBoxLayout()
 
         self.setGeometry(300, 300, 300, 300)
         self.widget = customPainter()
@@ -107,11 +109,16 @@ class ToolbarWindow(QDialog):
         #Sets up layout of the toolbar
         layout.setMenuBar(toolbar)
         layout.addWidget(self.widget)
-        layout.addWidget(self.label)
+        layout2.addWidget(self.label)
+        layout2.addWidget(self.accuracyLabel)
+        layout.addLayout(layout2)
 
     def submitCustomPicture(self):
         self.widget.submitPicture()
         tempString = ("Prediction: {}".format(DNNFunctions.predictedValue))
+        accuracy =DNNFunctions.loaded_model_results[1]*100
+        tempString2 = ("Accuracy: {}%".format(accuracy))
         self.label.setText(tempString)
+        self.accuracyLabel.setText(tempString2)
 
         
