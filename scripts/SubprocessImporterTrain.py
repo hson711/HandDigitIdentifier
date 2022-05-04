@@ -3,6 +3,7 @@ import sys
 from tabnanny import verbose
 from DNNFunctions import DNNFunctions
 import pickle
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 #Py file that allows calling of a subprocess with system arguments easily
 # Y_test = np.argmax(DNNFunctions.test_y, axis=1) # Convert one-hot to index
@@ -12,12 +13,12 @@ path = sys.argv[1]
 
 #Creates subprocess to download the dataset while making console output fed to the PIPE
 with open(path, 'rb') as f: 
-    model_name, chosen_optimiser, chosen_epoch, chosen_batch_size, chosen_train_ratio, train_x, train_y = pickle.load(f)
+    model_name, chosen_optimiser, chosen_epoch, chosen_batch_size, chosen_train_ratio, save_check, train_x, train_y, save_loc = pickle.load(f)
 
 
 DNNFunctions.make_model()
 #Create Sequential Model
-DNNFunctions.model._name = model_name
+DNNFunctions.model._name = model_name.strip()
 chosen_train_ratio = 1-(chosen_train_ratio/100)
 print("Just")
 print(chosen_train_ratio)
@@ -28,6 +29,9 @@ print(chosen_epoch)
 DNNFunctions.model.compile(loss='categorical_crossentropy', optimizer=chosen_optimiser, metrics=['accuracy'])
 DNNFunctions.model.fit(train_x, train_y, epochs=chosen_epoch, batch_size=chosen_batch_size, validation_split=chosen_train_ratio, verbose=1)
 
+print(save_check)
+if(save_check):
+    DNNFunctions.model.save(save_loc)
 
-with open(path, 'wb') as f:  # Python 3: open(..., 'wb')
-    pickle.dump(DNNFunctions.model, f, -1)
+
+

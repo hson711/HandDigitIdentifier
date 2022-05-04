@@ -14,8 +14,9 @@ from PyQt5.QtWidgets import (QApplication, QMessageBox, QPushButton, QVBoxLayout
 import pickle
 import re
 from customPredicionHub import *
+import time
 
-#Threading class to download dataset and update the progress bar without lagging UI
+#Threading class to train model and update the stats without lagging UI
 class External(QThread):
     update_signal1 = pyqtSignal(str)
     #Update_signal3 takes in the first string of data with eta and uses that to set the maximum value of the progress bar
@@ -43,7 +44,7 @@ class External(QThread):
             
             self.p = subprocess.Popen([sys.executable, file_loc, self.path], stdout = PIPE)
             #For loop to skip the first few lines of text of the realtime output as its not needed
-            for i in range(15):
+            for i in range(10):
                 self.realtime_output = self.p.stdout.readline()
                 print(self.realtime_output.decode("cp1252"))
 
@@ -62,14 +63,12 @@ class External(QThread):
                     
                     #Checks if cancel was clicked
                     if (self.running ==False):
+                        print("This happens")
                         self.cancelSignal.emit()
                     else:
-
-                        #Get results from tmp file
-                        with open(self.path, 'rb') as f: 
-                            results = pickle.load(f)
                         
-                        DNNFunctions.loaded_model_results = results
+                        time.sleep(7)
+
                         self.running = False
                         self.closeSignal.emit()
                     break
@@ -83,7 +82,8 @@ class External(QThread):
      #Stop function is called by the stop button of the gui to stop the subprocess and stop running the thread
     def stop(self):
         self.running = False
-        self.p.terminate()
+        self.p.kill()
+        print("gucci")
 
 #Class is the instance creator of the import datascreen window
 class trainWindow(QDialog):
@@ -91,6 +91,7 @@ class trainWindow(QDialog):
     maxValue = 1000
     current_epoch = 1
     total_epoch = 1
+    i=0
     #Initializes an instance of the window
     #Input: The string of the dataset class to use
     def __init__(self):
@@ -119,6 +120,8 @@ class trainWindow(QDialog):
         hbox4 = QHBoxLayout()
         hbox5 = QHBoxLayout()
         hbox6 = QHBoxLayout()
+        hbox7 = QHBoxLayout()
+        hbox8 = QHBoxLayout()
         vbox2 = QVBoxLayout()
         vbox3 = QVBoxLayout()
         vbox4 = QVBoxLayout()
@@ -178,10 +181,10 @@ class trainWindow(QDialog):
         self.results_eta_label = QLabel("ETA for epoch: ")
         self.results_eta_label.setAlignment(Qt.AlignCenter)
 
-        self.results_percent_epoch_label = QLabel("Percent Done(total): ")
+        self.results_percent_epoch_label = QLabel("Training Done(total): ")
         self.results_percent_epoch_label.setAlignment(Qt.AlignCenter)
 
-        self.results_percent_label = QLabel("Percent Done(total): ")
+        self.results_percent_label = QLabel("Training Done(total): ")
         self.results_percent_label.setAlignment(Qt.AlignCenter)
 
         self.results_loss_label = QLabel("Loss: ")
@@ -190,10 +193,20 @@ class trainWindow(QDialog):
         self.results_acc_label = QLabel("Accuracy: ")
         self.results_acc_label.setAlignment(Qt.AlignCenter)
 
+        self.save_label = QLabel("Save Model: ")
+        self.save_label.setAlignment(Qt.AlignRight)
+        self.save_check = QCheckBox()
+
 
         self.tbox = QTextBrowser()
         self.tbox.setAcceptRichText(True)
         self.tbox.setOpenExternalLinks(True)
+
+        self.val_loss_label = QLabel("Validation Loss: ")
+        self.val_loss_label.setAlignment(Qt.AlignCenter)
+
+        self.val_acc_label = QLabel("Validation Loss: ")
+        self.val_acc_label.setAlignment(Qt.AlignCenter)
 
         self.modelName_label = QLabel("Model Name:")
         self.modelName_label.setAlignment(Qt.AlignRight)
@@ -205,10 +218,14 @@ class trainWindow(QDialog):
         self.modelName.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter) 
 
 
-        self.button2 = QPushButton('Cancel')
+        self.button2 = QPushButton('Cancel Training')
         self.button2.setStyleSheet('background-color:yellow')
-        #Set enabled false so you can only click stop button after its been started
-        self.button2.setEnabled(False)
+
+        self.button3 = QPushButton('Train new model')
+        self.button3.setStyleSheet('background-color:yellow')
+
+        self.button4 = QPushButton('Exit')
+        self.button4.setStyleSheet('background-color:yellow')
 
         #Adds widgets to layout
         vbox.addWidget(self.label)
@@ -253,10 +270,21 @@ class trainWindow(QDialog):
         hbox5.addLayout(vbox6)
         vbox.addLayout(hbox5)
 
-        #Add Train Button & set layout
-        hbox6.addWidget(self.button)
-        hbox6.addWidget(self.button2)
+        hbox6.addWidget(self.save_label)
+        hbox6.addWidget(self.save_check)
         vbox.addLayout(hbox6)
+
+        #Add Validation labels
+        hbox8.addWidget(self.val_acc_label)
+        hbox8.addWidget(self.val_loss_label)
+        vbox.addLayout(hbox8)
+
+        #Add Train Button & set layout
+        hbox7.addWidget(self.button)
+        hbox7.addWidget(self.button2)
+        hbox7.addWidget(self.button3)
+        hbox7.addWidget(self.button4)
+        vbox.addLayout(hbox7)
         self.setLayout(vbox)
 
         #Change Value of label if slider is moved
@@ -265,6 +293,8 @@ class trainWindow(QDialog):
         #Connects buttons to respective functions
         self.button.clicked.connect(self.onButtonClick)
         self.button2.clicked.connect(self.on_stop)
+        self.button3.clicked.connect(self.reset)
+        self.button4.clicked.connect(self.close)
 
         self.progress.setVisible(False)
         self.results_epoch_label.setVisible(False)
@@ -272,6 +302,11 @@ class trainWindow(QDialog):
         self.results_percent_label.setVisible(False)
         self.results_acc_label.setVisible(False)
         self.results_loss_label.setVisible(False)
+        self.val_acc_label.setVisible(False)
+        self.val_loss_label.setVisible(False)
+
+        self.button2.setVisible(False)
+        self.button3.setVisible(False)
 
         #Creates thead and passes it the dataset class to use
         #Connects the thread signals to respective functions
@@ -281,21 +316,67 @@ class trainWindow(QDialog):
         self.thread2.closeSignal.connect(self.closeSignal)
         self.thread2.cancelSignal.connect(self.cancelSignal)
 
+    # Resets window back into original values
+    def reset(self):
+        self.label.setText("Train a Model:")
+        self.optimiser_label.setVisible(True)
+        self.optimiser.setVisible(True)
+        self.optimiser.setCurrentIndex(0)
+        self.epoch_label.setVisible(True)
+        self.epoch.setVisible(True)
+        self.epoch.setValue(1)
+        self.batch_size_label.setVisible(True)
+        self.batch_size.setVisible(True)
+        self.batch_size.setValue(1)
+        self.slider_label.setVisible(True)
+        self.slider.setVisible(True)
+        self.slider.setValue(100)
+        self.slider_pos.setVisible(True)
+        self.slider_pos.setText("Train: 100% & Validate: 0%")
+        self.modelName_label.setVisible(True)
+        self.modelName.setVisible(True)
+        self.modelName.setText("")
+        self.save_check.setVisible(True)
+        self.save_check.setChecked(False)
+        self.save_label.setVisible(True)
+
+        self.progress.setVisible(False)
+        self.results_epoch_label.setVisible(False)
+        self.results_epoch_label.setText("Epoch: 1/{}".format(self.epoch.value()))
+        self.results_eta_label.setVisible(False)
+        self.results_eta_label.setText("ETA: ")
+        self.results_percent_label.setText("Training Done(total): ")
+        self.results_percent_label.setVisible(False)
+        self.results_percent_epoch_label.setVisible(False)
+        self.results_percent_epoch_label.setText("Training Done(epoch): ")
+        self.results_acc_label.setVisible(False)
+        self.results_loss_label.setVisible(False)
+        self.results_acc_label.setText("Training Accuracy: ")
+        self.results_loss_label.setText("Training Loss: ")
+        self.val_acc_label.setVisible(False)
+        self.val_acc_label.setVisible(False)
+        self.val_loss_label.setVisible(False)
+        self.val_loss_label.setVisible(False)
+
+        self.button.setVisible(True)
+        self.button2.setVisible(False)
+        self.button3.setVisible(False)
+
     def updateSliderVal(self, value):
         self.slider_pos.setText("Train: {}% & Validate: {}%".format(value, 100-value))
 
 
     def cancelSignal(self):
-        self.label.setText("Load Model")
-        self.progress.setVisible(False)
+        self.reset()
 
     #On stop button pushed
     def on_stop(self):
         #Stops the thread instance
         self.thread2.stop()
-        #Enables start and clear cache button and disables stop button
-        self.button.setEnabled(True)
-        self.button2.setEnabled(False)
+        QMessageBox.information(self, "Training Cancelled", "The training has stopped!!")
+        file_path = str(pathlib.Path(__file__).parent.resolve())
+        file = file_path+"/../bin/temp.pkl"
+        os.remove(file)
 
     #Function that is passed the realtime output of the download progress to the console
     def downloaded(self,string):
@@ -304,45 +385,56 @@ class trainWindow(QDialog):
         string = string.split()
 
         try:
+            current_val = re.findall(r"(\d+)/", string[0])
+            max_val = re.findall(r'%s(\d+)' % '/', string[0])
             if(string[0] == "Epoch"):
                 print("Epock thing here")
                 current_val = re.findall(r"(\d+)/", string[1])
-                self.current_epoch = int(current_val)
+                self.current_epoch = int(current_val[0])
                 self.results_epoch_label.setText("Epoch: {}/{}".format(self.current_epoch, self.epoch.value()))
+                self.i=0
+                self.label.setText("Training Model")
+
+            
             else:
                 if ("val_loss:" in string):
-                    self.tbox.append("Epoch: {}/{}\n".format(self.current_epoch,self.epoch.value()))
-                    self.tbox.append("Training Loss: {} | Training Accuracy: {}% | Validation Loss: {} | Validation Accuracy: {}%".format(string[7],float(string[10])*100,string[13],float(string[16]))*100)
-                current_val = re.findall(r"(\d+)/", string[0])
-                max_val = re.findall(r'%s(\d+)' % '/', string[0])                
+                    self.val_loss_label.setText("Validation Loss: {}".format(string[13]))
+                    self.val_acc_label.setText("Validation Accuracy: {}%".format(float(string[16])*100))
+                    
+                if(int(current_val[0]) == int(max_val[0])-1):
+                    self.label.setText("Validating Data from epoch. Please Wait....(It might take a while depending on the batch size)")                    
                 val = int(current_val[0])+((self.current_epoch-1)*int(max_val[0]))
+                print(current_val[0])
+                print(max_val[0])
+                print(val)
+                percent_total = (val/((int(max_val[0]))*self.epoch.value()))*100
                 self.progress.setMaximum((int(max_val[0]))*self.epoch.value())
+                print("Max val: {}".format((int(max_val[0]))*self.epoch.value()))
                 self.progress.setValue(val)
-                self.results_eta_label.setText("ETA: {}".format(string[4]))
-                self.results_loss_label.setText("Loss: {}".format(string[7]))
-                self.results_acc_label.setText("Accuracy: {}%".format((float(string[10])*100)))
-                self.results_percent_epoch_label.setText("Percent Done(epoch): {:.2f}%".format((int(current_val[0])/int(max_val[0]))*100))
-                self.results_percent_label.setText("Percent Done(total): {:.2f}%".format((val/(int(max_val[0]))*self.epoch.value())*100))
+                self.results_eta_label.setText("ETA(epoch): {}".format(string[4]))
+                self.results_loss_label.setText("Training Loss: {}".format(string[7]))
+                self.results_acc_label.setText("Training Accuracy: {}%".format((float(string[10])*100)))
+                self.results_percent_epoch_label.setText("Training Done(epoch): {:.2f}%".format((int(current_val[0])/int(max_val[0]))*100))
+                self.results_percent_label.setText("Training Done(total): {:.2f}%".format(percent_total))
                 
 
         except Exception as e:
             print("Except jadj")
             print(e)
-        # try:
-        #     current_val = re.findall(r"(\d+)/", string[0])
-        #     max_val = re.findall(r'%s(\d+)' % '/', string[0])
-        #     self.progress.setValue(int(current_val[0]))
-        #     if (int(current_val[0]) != int(max_val[0])):
-        #         loaded = (int(current_val[0])/int(max_val[0]))*100
-        #         self.label.setText("{:.1f}% Loaded  | ETA: {}".format(loaded, string[4]))
-        # except Exception as e:
-        #     print(e)
-        #     pass
-
 
     #Function which is called when thread is initialized to set the maximum value of the progress bar
     #Input is passed one line of realtime output of the download progress
     def setMaximum(self,value):
+        self.label.setText("Training Model:")
+        self.progress.setVisible(True)
+        self.results_epoch_label.setVisible(True)
+        self.results_eta_label.setVisible(True)
+        self.results_percent_label.setVisible(True)
+        self.results_percent_epoch_label.setVisible(True)
+        self.results_acc_label.setVisible(True)
+        self.results_loss_label.setVisible(True)
+        
+        self.button2.setVisible(True)
         print(value)
         #Strips and decodes the passed string into digits
         try:
@@ -360,21 +452,50 @@ class trainWindow(QDialog):
     
     #Function is called when thread passes a close signal which closes the import dataset window
     def closeSignal(self):
-        QMessageBox.information(self, "Load Successful", "Model Loaded Successfully!")
-        self.customPredictionHub = customPredicionHub()
-        self.customPredictionHub.show()
-        self.close()
+        self.label.setText("Model Results:")
+        self.results_eta_label.setVisible(False)
+        self.results_epoch_label.setVisible(False)
+        self.results_percent_epoch_label.setVisible(False)
+        self.results_percent_label.setVisible(False)
+        self.val_loss_label.setVisible(True)
+        self.val_acc_label.setVisible(True)
+        self.button2.setVisible(False)
+        self.button3.setVisible(True)
+        self.button4.setVisible(True)
 
-    
     def onButtonClick(self):
+        if (self.save_check.isChecked() == True):
+            self.open_thread()
+        else:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText("Warning: Save Model not checked. Are you sure?")
+            msgBox.setWindowTitle("Save Warning")
+            msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+            returnValue = msgBox.exec()
+            if returnValue == QMessageBox.Yes:
+                self.open_thread()
+    
+    def open_thread(self):
         file_path = str(pathlib.Path(__file__).parent.resolve())
         file = file_path+"/../bin/temp.pkl"
         print ("Sending: {} | {} | {} | {} | {}".format(self.modelName.text(), self.optimiser.currentText().lower(),self.epoch.value(), self.batch_size.value(), self.slider.value()))
+        save_loc=""
+        if (self.save_check.isChecked() == True):
+            if self.modelName.text().strip() == "":
+                model_name = "mymodel"
+            else:
+                model_name = self.modelName.text().strip()
+            print("HERE")
+            save_file_path = str(QFileDialog.getExistingDirectory(None, "Select Directory to save model"))
+            save_loc = save_file_path+"/"+model_name
+        
         with open(file, 'wb') as f:  # Python 3: open(..., 'wb')
-            pickle.dump([self.modelName.text(), self.optimiser.currentText().lower(), self.epoch.value(), self.batch_size.value(), self.slider.value(), DNNFunctions.train_x, DNNFunctions.train_y], f, -1)
+            pickle.dump([self.modelName.text(), self.optimiser.currentText().lower(), self.epoch.value(), self.batch_size.value(), self.slider.value(), self.save_check.isChecked(), DNNFunctions.train_x, DNNFunctions.train_y, save_loc], f, -1)
 
 
-        self.thread2.running
+        self.thread2.running = True
         self.thread2.path = file
         self.thread2.start()
 
@@ -390,48 +511,11 @@ class trainWindow(QDialog):
         self.slider_pos.setVisible(False)
         self.modelName_label.setVisible(False)
         self.modelName.setVisible(False)
+        self.save_check.setVisible(False)
+        self.save_label.setVisible(False)
+        
 
-        self.progress.setVisible(True)
-        self.results_epoch_label.setVisible(True)
-        self.results_eta_label.setVisible(True)
-        self.results_percent_label.setVisible(True)
-        self.results_acc_label.setVisible(True)
-        self.results_loss_label.setVisible(True)
-
-        self.button.setEnabled(False)
-
-        # model_path = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
-        # if model_path != "":
-        #     if (DNNFunctions.model_load(model_path) == True):
-        #         file_path = str(pathlib.Path(__file__).parent.resolve())
-        #         file = file_path+"/objs.pkl"
-
-        #         DNNFunctions.test_x = DNNFunctions.raw_test_x.reshape(len(DNNFunctions.raw_test_x), 784)
-        #         DNNFunctions.test_x = DNNFunctions.test_x.astype('float32')
-        #         DNNFunctions.test_x = DNNFunctions.test_x/255
-        #         DNNFunctions.test_y = keras.utils.np_utils.to_categorical(DNNFunctions.raw_test_y)
-        #         DNNFunctions.test_x = DNNFunctions.test_x.reshape(-1, 28, 28, 1)
-
-
-        #         with open(file, 'wb') as f:  # Python 3: open(..., 'wb')
-        #             pickle.dump([model_path, DNNFunctions.test_x, DNNFunctions.test_y], f, -1)   
-
-        #          #Enables stop button
-        #         self.button2.setEnabled(True)
-        #         self.label.setText("Loading....Please Wait")
-        #         self.progress.setVisible(True)
-        #         #Resets progress bar 
-        #         self.progress.setValue(0)
-        #         #Starts the thread object
-        #         self.thread2.running = True
-        #         self.thread2.path = file
-        #         self.thread2.start()
-        #         #Disables start button and clear cache button
-        #         self.button.setEnabled(False)    
-        #     else:
-        #         msg = QMessageBox()
-        #         msg.setIcon(QMessageBox.Critical)
-        #         msg.setText("Error")
-        #         msg.setInformativeText('No Model found in directory')
-        #         msg.setWindowTitle("Model Not Found")
-        #         msg.exec_()    
+        self.button.setVisible(False)
+        self.button4.setVisible(False)
+        self.label.setText("Loading. Please Wait....")
+        self.results_percent_label.setVisible(False)

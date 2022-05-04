@@ -58,9 +58,12 @@ class Thread(QThread):
                 if self.p.poll() is not None:
                     print("It finished")
                     
+                    #Checks if cancel was clicked
                     if (self.running ==False):
                         self.cancelSignal.emit()
                     else:
+
+                        #Get results from tmp file
                         with open(self.path, 'rb') as f: 
                             results = pickle.load(f)
                         
@@ -197,6 +200,7 @@ class modelLoad(QDialog):
     #Function is called when thread passes a close signal which closes the import dataset window
     def closeSignal(self):
         QMessageBox.information(self, "Load Successful", "Model Loaded Successfully!")
+        print(DNNFunctions.loaded_model_results)
         self.customPredictionHub = customPredicionHub()
         self.customPredictionHub.show()
         self.close()

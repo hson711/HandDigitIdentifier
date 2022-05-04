@@ -270,11 +270,5 @@ class Ui_trainWindow(object):
             file_path = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
             print(file_path)
             DNNFunctions.model.save(file_path+"/"+DNNFunctions.model.name)
-            self.model_saved_success()
+            QMessageBox.information(self, "Load Successful", "Model Loaded Successfully!")
 
-    def model_saved_success():
-        msg = QMessageBox()
-        msg.setText("Save Successful")
-        msg.setInformativeText('Your model has been saved successfully ')
-        msg.setWindowTitle("Save Successful")
-        msg.exec_()
