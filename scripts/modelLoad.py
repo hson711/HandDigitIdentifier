@@ -1,16 +1,12 @@
 import imp
 import sys
-from tabnanny import verbose
-from tkinter import Label
 from xmlrpc.client import Boolean
-from PyQt5.QtWidgets import (QApplication, QDialog, QProgressBar, QPushButton, QVBoxLayout, QHBoxLayout)
+from PyQt5.QtWidgets import (QDialog, QProgressBar, QPushButton, QVBoxLayout, QHBoxLayout)
 from PyQt5.QtCore import QThread, pyqtSignal, Qt 
-from numpy import NaN, integer
 from DNNFunctions import *
-import contextlib
 import subprocess
 from subprocess import *
-from PyQt5.QtWidgets import (QApplication, QMessageBox, QPushButton, QVBoxLayout, QFileDialog, QLabel)
+from PyQt5.QtWidgets import (QMessageBox, QPushButton, QVBoxLayout, QFileDialog, QLabel)
 import pickle
 import re
 from customPredicionHub import *

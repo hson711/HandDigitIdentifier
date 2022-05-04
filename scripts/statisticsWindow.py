@@ -1,5 +1,4 @@
-import sys
-from PyQt5.QtWidgets import (QApplication, QWidget, QLineEdit, QTextBrowser, QPushButton, QVBoxLayout)
+from PyQt5.QtWidgets import (QWidget, QTextBrowser, QVBoxLayout)
 from DNNFunctions import DNNFunctions
 
 #Class to create a QWidget window that tells you basic statistics of the loaded dataset in the photo viewer

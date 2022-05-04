@@ -1,7 +1,5 @@
 from asyncio.windows_events import NULL
-from PyQt5.QtWidgets import QComboBox, QMainWindow, QApplication, QWidget, QVBoxLayout
-from PyQt5.QtGui import QIcon
-import sys
+from PyQt5.QtWidgets import QComboBox, QMainWindow, QVBoxLayout
 from DNNFunctions import DNNFunctions
 from importDatasetScreen import importDatasetScreen
 import contextlib

@@ -1,6 +1,5 @@
 #Subprocess Importer
 import sys
-from tabnanny import verbose
 from DNNFunctions import DNNFunctions
 import pickle
 

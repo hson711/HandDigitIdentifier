@@ -1,9 +1,7 @@
 #Subprocess Importer
 import sys
-from tabnanny import verbose
 from DNNFunctions import DNNFunctions
 import pickle
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 #Py file that allows calling of a subprocess with system arguments easily
 # Y_test = np.argmax(DNNFunctions.test_y, axis=1) # Convert one-hot to index

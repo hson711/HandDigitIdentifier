@@ -1,7 +1,5 @@
 #Import Functions
 import sys
-from tabnanny import verbose
-from xmlrpc.client import Boolean
 from PyQt5.QtCore import QThread, pyqtSignal, Qt 
 from DNNFunctions import *
 import subprocess

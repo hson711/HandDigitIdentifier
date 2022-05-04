@@ -1,17 +1,12 @@
 from asyncio.windows_events import NULL
 from pickle import TRUE
-from PyQt5.QtWidgets import (QWidget, QSlider, QLineEdit, QLabel, QPushButton, QScrollArea,QApplication,QHBoxLayout, QVBoxLayout, QMainWindow)
-from PyQt5.QtCore import Qt, QSize
-from PyQt5 import QtWidgets, uic
+from PyQt5.QtWidgets import (QWidget, QLabel, QScrollArea, QMainWindow)
+from PyQt5.QtCore import Qt
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-import sys
-import io
-from PIL import Image, ImageCms
-import os
 from DNNFunctions import DNNFunctions
-import threading
 import numpy as np
 from statisticsWindow import statisticsWindow
 

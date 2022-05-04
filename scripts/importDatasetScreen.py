@@ -1,16 +1,11 @@
 import sys
 from xmlrpc.client import Boolean
-from PyQt5.QtWidgets import (QApplication, QDialog, QProgressBar, QPushButton, QVBoxLayout, QHBoxLayout)
+from PyQt5.QtWidgets import (QDialog, QProgressBar, QPushButton, QVBoxLayout, QHBoxLayout)
 from PyQt5.QtCore import QThread, pyqtSignal
-from numpy import NaN, integer
 from DNNFunctions import *
-import contextlib
-import io
-import threading
-import gevent
 import subprocess
 from subprocess import *
-from PyQt5.QtWidgets import (QApplication, QWidget, QLineEdit, QTextBrowser, QPushButton, QVBoxLayout)
+from PyQt5.QtWidgets import (QApplication, QTextBrowser, QPushButton, QVBoxLayout)
 
 #Threading class to download dataset and update the progress bar without lagging UI
 class Thread(QThread):
